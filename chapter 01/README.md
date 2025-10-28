@@ -113,7 +113,7 @@ Each node has its **own private memory**, and nodes communicate through a networ
 └─────────────┘     └─────────────┘     └─────────────┘
        ▲                   ▲                   ▲
        │                   │                   │
-       └───── Network Interconnect (Ethernet / InfiniBand)
+       └─── Network Interconnect (Ethernet) ───┘
 ```
 
 **Characteristics:**
@@ -145,8 +145,8 @@ A hybrid between SMP and Clusters. CPUs have **local memory** but can also acces
 │  ┌─────────┐   ┌─────────┐  │        │ ┌─────────┐    ┌─────────┐  │
 │  │  CPU1   │   │  CPU2   │  │        │ │  CPU3   │    │  CPU4   │  │
 │  └────┬────┘   └────┬────┘  │        │ └────┬────┘    └────┬────┘  │
-│       │             │       │        │      │              │       │
-│   ┌───▼─────────────▼────┐  │        │  ┌───▼──────────────▼───┐   │
+│       ▼             ▼       │        │      ▼              ▼       │
+│   ┌──────────────────────┐  │        │  ┌──────────────────────┐   │
 │   │     Local RAM 1      │◄─┼────────┼─►│     Local RAM 2      │   │
 │   └──────────────────────┘  │        │  └──────────────────────┘   │
 └─────────────────────────────┘        └─────────────────────────────┘
