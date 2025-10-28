@@ -1,11 +1,3 @@
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
-<style>
-code, pre {
-  font-family: 'Fira Code', monospace;
-  font-size: 0.95em;
-}
-</style>
-
 ## Chapter I: Introduction to Parallel Computing
 
 ### 1. Why We Need Parallel Computing
