@@ -9,13 +9,6 @@ Modern computing problems—AI, simulation, and massive data—demand processing
 **Example: Weather Forecasting**
 A 3D grid with 100 million points and 1000 time steps requires ~400 billion calculations. One 3 GHz CPU would take ~37 hours. With 100 CPUs, that drops to about **22 minutes**.
 
-```mermaid
-graph TD
-    A[Socket 1] --> B[CPU1]
-    A --> C[CPU2]
-    B --> D[Local RAM 1]
-    C --> D
-```
 #### 1.2 The Power Wall
 
 Clock speeds hit physical limits (power, heat) around 2004. Instead of faster cores, CPUs began adding **more cores**.
