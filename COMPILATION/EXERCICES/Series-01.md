@@ -24,7 +24,7 @@ polygon[fill="white"] {
 
 # TD01 — Solutions
 
-**Course:** Compilation / Lexical Analysis - 
+**Course:** Compilation / Lexical Analysis
 **Instructor:** Dr. Anouar Khaldi
 
 ---
@@ -65,7 +65,9 @@ Let $\Sigma = {a,b}$.
 Given:
 
 $R_1 = a^*(b ;|; a b a^*)$
+
 $R_2 = (a | b)^* a (a | b)^*$
+
 $R_3 = (a b)^* ;|; (b a)^*$
 
 **Descriptions**:
