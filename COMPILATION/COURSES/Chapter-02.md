@@ -436,10 +436,13 @@ Where `δ: Q × (Σ ∪ {ε}) → P(Q)` (can move without consuming input)
 Transitions:
 
 ```
-δ(q1,0)={q1}   δ(q1,1)={q1,q2}
-δ(q2,0)={q3}   δ(q2,ε)={q3}
+δ(q1,0)={q1}
+δ(q1,1)={q1,q2}
+δ(q2,0)={q3}
+δ(q2,ε)={q3}
 δ(q3,1)={q4}
-δ(q4,0)={q4}   δ(q4,1)={q4}
+δ(q4,0)={q4}
+δ(q4,1)={q4}
 ```
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="416pt" height="92pt" viewBox="0.00 0.00 416.00 92.00">
@@ -518,5 +521,3 @@ Transitions:
 </g>
 </g>
 </svg>
-
-**End of Chapter 2** ✅
