@@ -24,7 +24,7 @@ polygon[fill="white"] {
 
 # TD01 — Solutions
 
-**Course:** Compilation / Lexical Analysis <br>
+**Course:** Compilation / Lexical Analysis
 **Instructor:** Dr. Anouar Khaldi
 
 ---
