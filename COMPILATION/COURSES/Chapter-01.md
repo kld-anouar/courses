@@ -148,5 +148,3 @@ STF id1, R1
 * Performance optimization
 * Natural Language Processing
 * Database query engines
-
----
