@@ -23,15 +23,8 @@ polygon[fill="white"] {
 </style>
 
 # Chapter 2: Lexical Analysis
-
-Presented by **Dr. Anouar Khaldi**
-
-**Democratic and Popular Republic of Algeria**
-**Ministry of Higher Education and Scientific Research**
-**University of Kasdi Merbah, Ouargla**
-*Computer Security Engineer*
-
-**October 2025**
+**Course:** Compilation / Lexical Analysis
+**Instructor:** Dr. Anouar Khaldi
 
 ---
 

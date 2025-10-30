@@ -1,6 +1,5 @@
 # Compilation – Introduction
-**Course:** Compilation / Lexical Analysis
-
+**Course:** Compilation / Introduction
 **Instructor:** Dr. Anouar Khaldi
 
 ---
