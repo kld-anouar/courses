@@ -25,7 +25,7 @@ polygon[fill="white"] {
 # TD01 — Solutions
 
 **Course:** Compilation / Lexical Analysis **Instructor:** Dr. Anouar Khaldi
-
+eazeazezae
 ---
 
 ## Exercise 01 — Fundamental Regular Expressions
