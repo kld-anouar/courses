@@ -1,4 +1,4 @@
-## Chapter II: Models and Application Structures for Parallel Programming Interfaces (Expanded Edition)
+## Chapter II: Models and Application Structures for Parallel Programming Interfaces
 
 In this chapter, we explore the **main models and interfaces** used to write parallel programs. By understanding these models deeply, we will later apply them in Practice Sessions (TD) and Labs (TP).
 
