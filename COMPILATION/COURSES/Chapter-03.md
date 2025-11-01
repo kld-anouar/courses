@@ -1,3 +1,27 @@
+<style>
+/* Remove the white background from the initial polygon */
+polygon[fill="white"] {
+  fill: none !important;
+}
+
+/* Style for all path and ellipse elements (lines, arrows, circles) */
+.graph path, .graph ellipse {
+  stroke: white !important;
+  fill: none !important; /* Ensures state fills are transparent/none */
+}
+
+/* Style for all text (state names, transition symbols) */
+.graph text {
+  fill: white !important;
+}
+
+/* Specific fix for final state rings and arrow heads */
+.graph polygon[fill="black"] {
+  fill: white !important;
+  stroke: white !important;
+}
+</style>
+
 ## Chapter 2: Syntactic Analysis
 
 ### 2.1 Introduction to Syntax Analysis
@@ -70,7 +94,161 @@ E
 ⇒ id + id * F        (expand **F → id**)
 ⇒ id + id * id       (expand **F → id**)
 ```
-![Parse tree 01](parse_tree_01.svg)
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250pt" height="386pt" viewBox="0.00 0.00 250.00 386.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 382)">
+<title>ParseTree</title>
+<!-- E1 -->
+<g id="node1" class="node">
+<title>E1</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-354.6" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-348.6" font-family="Arial" font-size="20.00" fill="white">E</text>
+</g>
+<!-- E2 -->
+<g id="node2" class="node">
+<title>E2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-265.8" font-family="Arial" font-size="20.00" fill="white">E</text>
+</g>
+<!-- E1&#45;&gt;E2 -->
+<g id="edge1" class="edge">
+<title>E1-&gt;E2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M73.97,-335.67C65.47,-325.1 54.56,-311.53 45.04,-299.7"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="47.92,-297.7 38.92,-292.1 42.46,-302.08 47.92,-297.7"/>
+</g>
+<!-- plus -->
+<g id="node3" class="node">
+<title>plus</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-265.8" font-family="Arial" font-size="20.00" fill="white">+</text>
+</g>
+<!-- E1&#45;&gt;plus -->
+<g id="edge2" class="edge">
+<title>E1-&gt;plus</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M88.4,-331.09C88.4,-323.71 88.4,-315.33 88.4,-307.28"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="91.9,-307.28 88.4,-297.28 84.9,-307.28 91.9,-307.28"/>
+</g>
+<!-- T1 -->
+<g id="node4" class="node">
+<title>T1</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-265.8" font-family="Arial" font-size="20.00" fill="white">T</text>
+</g>
+<!-- E1&#45;&gt;T1 -->
+<g id="edge3" class="edge">
+<title>E1-&gt;T1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M102.83,-335.67C111.33,-325.1 122.24,-311.53 131.76,-299.7"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="134.34,-302.08 137.88,-292.1 128.88,-297.7 134.34,-302.08"/>
+</g>
+<!-- T2 -->
+<g id="node5" class="node">
+<title>T2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-183" font-family="Arial" font-size="20.00" fill="white">T</text>
+</g>
+<!-- E2&#45;&gt;T2 -->
+<g id="edge4" class="edge">
+<title>E2-&gt;T2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M23.4,-248.29C23.4,-240.91 23.4,-232.53 23.4,-224.48"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="26.9,-224.48 23.4,-214.48 19.9,-224.48 26.9,-224.48"/>
+</g>
+<!-- T3 -->
+<g id="node6" class="node">
+<title>T3</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-183" font-family="Arial" font-size="20.00" fill="white">T</text>
+</g>
+<!-- T1&#45;&gt;T3 -->
+<g id="edge7" class="edge">
+<title>T1-&gt;T3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M138.97,-252.87C130.47,-242.3 119.56,-228.73 110.04,-216.9"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="112.92,-214.9 103.92,-209.3 107.46,-219.28 112.92,-214.9"/>
+</g>
+<!-- star -->
+<g id="node7" class="node">
+<title>star</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-183" font-family="Arial" font-size="20.00" fill="white">*</text>
+</g>
+<!-- T1&#45;&gt;star -->
+<g id="edge8" class="edge">
+<title>T1-&gt;star</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M153.4,-248.29C153.4,-240.91 153.4,-232.53 153.4,-224.48"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="156.9,-224.48 153.4,-214.48 149.9,-224.48 156.9,-224.48"/>
+</g>
+<!-- F1 -->
+<g id="node8" class="node">
+<title>F1</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-183" font-family="Arial" font-size="20.00" fill="white">F</text>
+</g>
+<!-- T1&#45;&gt;F1 -->
+<g id="edge9" class="edge">
+<title>T1-&gt;F1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M167.83,-252.87C176.33,-242.3 187.24,-228.73 196.76,-216.9"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="199.34,-219.28 202.88,-209.3 193.88,-214.9 199.34,-219.28"/>
+</g>
+<!-- F2 -->
+<g id="node9" class="node">
+<title>F2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-100.2" font-family="Arial" font-size="20.00" fill="white">F</text>
+</g>
+<!-- T2&#45;&gt;F2 -->
+<g id="edge5" class="edge">
+<title>T2-&gt;F2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M23.4,-165.49C23.4,-158.11 23.4,-149.73 23.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="26.9,-141.68 23.4,-131.68 19.9,-141.68 26.9,-141.68"/>
+</g>
+<!-- F3 -->
+<g id="node10" class="node">
+<title>F3</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-100.2" font-family="Arial" font-size="20.00" fill="white">F</text>
+</g>
+<!-- T3&#45;&gt;F3 -->
+<g id="edge10" class="edge">
+<title>T3-&gt;F3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M88.4,-165.49C88.4,-158.11 88.4,-149.73 88.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="91.9,-141.68 88.4,-131.68 84.9,-141.68 91.9,-141.68"/>
+</g>
+<!-- id1 -->
+<g id="node11" class="node">
+<title>id1</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-100.2" font-family="Arial" font-size="20.00" fill="white">id</text>
+</g>
+<!-- F1&#45;&gt;id1 -->
+<g id="edge12" class="edge">
+<title>F1-&gt;id1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M218.4,-165.49C218.4,-158.11 218.4,-149.73 218.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="221.9,-141.68 218.4,-131.68 214.9,-141.68 221.9,-141.68"/>
+</g>
+<!-- id2 -->
+<g id="node12" class="node">
+<title>id2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-23.4" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-17.4" font-family="Arial" font-size="20.00" fill="white">id</text>
+</g>
+<!-- F2&#45;&gt;id2 -->
+<g id="edge6" class="edge">
+<title>F2-&gt;id2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M23.4,-82.69C23.4,-75.31 23.4,-66.93 23.4,-58.88"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="26.9,-58.88 23.4,-48.88 19.9,-58.88 26.9,-58.88"/>
+</g>
+<!-- id3 -->
+<g id="node13" class="node">
+<title>id3</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-23.4" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-17.4" font-family="Arial" font-size="20.00" fill="white">id</text>
+</g>
+<!-- F3&#45;&gt;id3 -->
+<g id="edge11" class="edge">
+<title>F3-&gt;id3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M88.4,-82.69C88.4,-75.31 88.4,-66.93 88.4,-58.88"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="91.9,-58.88 88.4,-48.88 84.9,-58.88 91.9,-58.88"/>
+</g>
+</g>
+</svg>
 
 Rightmost derivation:
 ```python
@@ -84,7 +262,162 @@ E
 ⇒ F + id * id       (expand T → F)
 ⇒ id + id * id      (expand F → id)
 ```
-![Parse tree 01](parse_tree_02.svg)
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250pt" height="386pt" viewBox="0.00 0.00 250.00 386.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 382)">
+<title>ParseTree</title>
+<!-- E1 -->
+<g id="node1" class="node">
+<title>E1</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-354.6" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-348" font-family="Arial" font-size="22.00" fill="white">E</text>
+</g>
+<!-- T1 -->
+<g id="node2" class="node">
+<title>T1</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-265.2" font-family="Arial" font-size="22.00" fill="white">T</text>
+</g>
+<!-- E1&#45;&gt;T1 -->
+<g id="edge1" class="edge">
+<title>E1-&gt;T1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M138.97,-335.67C130.47,-325.1 119.56,-311.53 110.04,-299.7"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="112.92,-297.7 103.92,-292.1 107.46,-302.08 112.92,-297.7"/>
+</g>
+<!-- plus -->
+<g id="node3" class="node">
+<title>plus</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-265.2" font-family="Arial" font-size="22.00" fill="white">+</text>
+</g>
+<!-- E1&#45;&gt;plus -->
+<g id="edge2" class="edge">
+<title>E1-&gt;plus</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M153.4,-331.09C153.4,-323.71 153.4,-315.33 153.4,-307.28"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="156.9,-307.28 153.4,-297.28 149.9,-307.28 156.9,-307.28"/>
+</g>
+<!-- E2 -->
+<g id="node4" class="node">
+<title>E2</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-271.8" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-265.2" font-family="Arial" font-size="22.00" fill="white">E</text>
+</g>
+<!-- E1&#45;&gt;E2 -->
+<g id="edge3" class="edge">
+<title>E1-&gt;E2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M167.83,-335.67C176.33,-325.1 187.24,-311.53 196.76,-299.7"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="199.34,-302.08 202.88,-292.1 193.88,-297.7 199.34,-302.08"/>
+</g>
+<!-- T2 -->
+<g id="node5" class="node">
+<title>T2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-182.4" font-family="Arial" font-size="22.00" fill="white">T</text>
+</g>
+<!-- T1&#45;&gt;T2 -->
+<g id="edge4" class="edge">
+<title>T1-&gt;T2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M73.97,-252.87C65.47,-242.3 54.56,-228.73 45.04,-216.9"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="47.92,-214.9 38.92,-209.3 42.46,-219.28 47.92,-214.9"/>
+</g>
+<!-- star -->
+<g id="node6" class="node">
+<title>star</title>
+<ellipse fill="none" stroke="white" cx="88.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="88.4" y="-182.4" font-family="Arial" font-size="22.00" fill="white">*</text>
+</g>
+<!-- T1&#45;&gt;star -->
+<g id="edge5" class="edge">
+<title>T1-&gt;star</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M88.4,-248.29C88.4,-240.91 88.4,-232.53 88.4,-224.48"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="91.9,-224.48 88.4,-214.48 84.9,-224.48 91.9,-224.48"/>
+</g>
+<!-- F1 -->
+<g id="node7" class="node">
+<title>F1</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-182.4" font-family="Arial" font-size="22.00" fill="white">F</text>
+</g>
+<!-- T1&#45;&gt;F1 -->
+<g id="edge6" class="edge">
+<title>T1-&gt;F1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M102.83,-252.87C111.33,-242.3 122.24,-228.73 131.76,-216.9"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="134.34,-219.28 137.88,-209.3 128.88,-214.9 134.34,-219.28"/>
+</g>
+<!-- T3 -->
+<g id="node8" class="node">
+<title>T3</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-189" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-182.4" font-family="Arial" font-size="22.00" fill="white">T</text>
+</g>
+<!-- E2&#45;&gt;T3 -->
+<g id="edge7" class="edge">
+<title>E2-&gt;T3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M218.4,-248.29C218.4,-240.91 218.4,-232.53 218.4,-224.48"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="221.9,-224.48 218.4,-214.48 214.9,-224.48 221.9,-224.48"/>
+</g>
+<!-- F2 -->
+<g id="node9" class="node">
+<title>F2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-99.6" font-family="Arial" font-size="22.00" fill="white">F</text>
+</g>
+<!-- T2&#45;&gt;F2 -->
+<g id="edge8" class="edge">
+<title>T2-&gt;F2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M23.4,-165.49C23.4,-158.11 23.4,-149.73 23.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="26.9,-141.68 23.4,-131.68 19.9,-141.68 26.9,-141.68"/>
+</g>
+<!-- id1 -->
+<g id="node10" class="node">
+<title>id1</title>
+<ellipse fill="none" stroke="white" cx="153.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="153.4" y="-99.6" font-family="Arial" font-size="22.00" fill="white">id</text>
+</g>
+<!-- F1&#45;&gt;id1 -->
+<g id="edge10" class="edge">
+<title>F1-&gt;id1</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M153.4,-165.49C153.4,-158.11 153.4,-149.73 153.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="156.9,-141.68 153.4,-131.68 149.9,-141.68 156.9,-141.68"/>
+</g>
+<!-- F3 -->
+<g id="node11" class="node">
+<title>F3</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-106.2" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-99.6" font-family="Arial" font-size="22.00" fill="white">F</text>
+</g>
+<!-- T3&#45;&gt;F3 -->
+<g id="edge11" class="edge">
+<title>T3-&gt;F3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M218.4,-165.49C218.4,-158.11 218.4,-149.73 218.4,-141.68"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="221.9,-141.68 218.4,-131.68 214.9,-141.68 221.9,-141.68"/>
+</g>
+<!-- id2 -->
+<g id="node12" class="node">
+<title>id2</title>
+<ellipse fill="none" stroke="white" cx="23.4" cy="-23.4" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="23.4" y="-16.8" font-family="Arial" font-size="22.00" fill="white">id</text>
+</g>
+<!-- F2&#45;&gt;id2 -->
+<g id="edge9" class="edge">
+<title>F2-&gt;id2</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M23.4,-82.69C23.4,-75.31 23.4,-66.93 23.4,-58.88"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="26.9,-58.88 23.4,-48.88 19.9,-58.88 26.9,-58.88"/>
+</g>
+<!-- id3 -->
+<g id="node13" class="node">
+<title>id3</title>
+<ellipse fill="none" stroke="white" cx="218.4" cy="-23.4" rx="23.4" ry="23.4"/>
+<text xml:space="preserve" text-anchor="middle" x="218.4" y="-16.8" font-family="Arial" font-size="22.00" fill="white">id</text>
+</g>
+<!-- F3&#45;&gt;id3 -->
+<g id="edge12" class="edge">
+<title>F3-&gt;id3</title>
+<path fill="none" stroke="white" stroke-width="1.2" d="M218.4,-82.69C218.4,-75.31 218.4,-66.93 218.4,-58.88"/>
+<polygon fill="white" stroke="white" stroke-width="1.2" points="221.9,-58.88 218.4,-48.88 214.9,-58.88 221.9,-58.88"/>
+</g>
+</g>
+</svg>
+
 ### 2.4 Problems in Grammar Design
 
 #### 2.4.1 Ambiguity
