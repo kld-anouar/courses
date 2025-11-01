@@ -554,25 +554,93 @@ FOLLOW(T)  = {+, ), $}
 FOLLOW(T') = {+, ), $}
 FOLLOW(F)  = {*, +, ), $}
 ```
+### 3. Introduction to Parsing
+
+Parsing is the phase of a compiler that checks whether the input program follows the grammar of the programming language and builds its syntactic structure.
+
+There are two major categories of parsing techniques:
+
+| Category              | Direction     | Derivation Type                   | Examples                      |
+| --------------------- | ------------- | --------------------------------- | ----------------------------- |
+| **Top-Down Parsing**  | Left-to-right | Leftmost derivation               | Recursive Descent, LL(1)      |
+| **Bottom-Up Parsing** | Left-to-right | Rightmost derivation (in reverse) | LR(0), SLR(1), LALR(1), LR(1) |
+
+We start with **top-down** parsers as they are more intuitive.
+
+---
+
+### 3.1 Overview of Parsing Methods
+
+Before diving into the details, let's clearly introduce the two families of parsing approaches used in compiler design:
+
+#### ✅ Top‑Down (Descending) Parsing
+
+* Starts from the **start symbol** and tries to **predict** the input
+* Builds the parse tree **from root to leaves**
+* Follows **leftmost derivation**
+* Most intuitive method
+
+**Examples:**
+
+* Recursive Descent Parsing
+* LL(1) Parsing
+
+**Key idea:**
+
+> "What rule should I apply next to match the input token?"
+
+#### ✅ Bottom‑Up Parsing
+
+* Starts from the **input tokens** and tries to **reduce** them to the start symbol
+* Builds the parse tree **from leaves to root**
+* Follows **rightmost derivation in reverse**
+* Used in real-world compilers (YACC, Bison)
+
+**Examples:**
+
+* LR(0)
+* SLR(1)
+* LALR(1)
+* LR(1)
+
+**Key idea:**
+
+> "What part of the input can I reduce to a non‑terminal now?"
+
+---
+
+---
 
 ### 3.2 Top-Down Parsing
 
+Top-down parsers start from the start symbol and try to derive the input string.
+
+They "predict" which grammar rule to use.
+
+---
+
 #### 3.2.1 Recursive Descent Parsing
 
-Each non-terminal has a corresponding parsing function.
+**Idea:** For each non-terminal, write a C function that parses it.
+
+Simple, intuitive, close to hand-parsing.
 
 **Grammar:**
+
 ```
 E → TE'
 E' → +TE' | ε
 T → FT'
+F → (E) | id
+T' → *FT' | ε
 ```
 
-**Pseudo-code:**
+**Pseudo-code in C style:**
+
 ```c
 void E() {
-    T();
-    E_prime();
+    T();         // parse T
+    E_prime();   // parse E'
 }
 
 void E_prime() {
@@ -581,7 +649,7 @@ void E_prime() {
         T();
         E_prime();
     }
-    // else do nothing → ε-production
+    // else epsilon
 }
 
 void T() {
@@ -590,182 +658,62 @@ void T() {
 }
 ```
 
+**Note:** Works only for grammars without left recursion.
+
+---
+
 #### 3.2.2 LL(1) Parsing
 
-**LL(1):** Left-to-right scan, Leftmost derivation, 1 lookahead symbol.
+**LL(1)** = **L**eft-to-right scan, **L**eftmost derivation, **1** lookahead token.
 
-#### 3.2.2 LL(1) Parsing
+LL(1) parsers use a **parsing table** and a stack – more systematic than recursive descent.
 
-**LL(1):** Left-to-right scan, Leftmost derivation, 1 lookahead symbol.
+To fill table:
 
-**LL(1) Parsing Table Construction:**
+1. For each terminal in `FIRST(α)` add production to cell
+2. If ε in `FIRST(α)`, add to FOLLOW(A) cells
 
-For each production **A → α**:
+**LL(1) Table Example:** *(same grammar)*
 
-1. For each terminal *a* in `FIRST(α)`: add **A → α** to **M[A, a]**.
-2. If ε ∈ `FIRST(α)`: for each *b* in `FOLLOW(A)`, add **A → α** to **M[A, b]**.
+| NTs | id    | +       | *       | (     | )    | $    |
+| --- | ----- | ------- | ------- | ----- | ---- | ---- |
+| E   | E→TE' |         |         | E→TE' |      |      |
+| E'  |       | E'→+TE' |         |       | E'→ε | E'→ε |
+| T   | T→FT' |         |         | T→FT' |      |      |
+| T'  |       | T'→ε    | T'→*FT' |       | T'→ε | T'→ε |
+| F   | F→id  |         |         | F→(E) |      |      |
 
+**Condition:** Each cell has **at most one** rule ⇒ no conflicts.
 
-**Example Grammar:**
+---
 
-```
-E  → TE'
-E' → +TE' | ε
-T  → FT'
-T' → *FT' | ε
-F  → (E) | id
-```
+### 4. Bottom-Up Parsing
 
-**FIRST and FOLLOW sets:**
+Bottom-up parsers start from the input and **reduce** it back to the start symbol.
 
-```
-FIRST(E)  = {(, id}
-FIRST(E') = {+, ε}
-FIRST(T)  = {(, id}
-FIRST(T') = {*, ε}
-FIRST(F)  = {(, id}
+They find **handles** and apply **shift–reduce** operations.
 
-FOLLOW(E)  = {), $}
-FOLLOW(E') = {), $}
-FOLLOW(T)  = {+, ), $}
-FOLLOW(T') = {+, ), $}
-FOLLOW(F)  = {*, +, ), $}
-```
+| Action | Meaning              |
+| ------ | -------------------- |
+| Shift  | Push token on stack  |
+| Reduce | Replace RHS with LHS |
+| Accept | Successful parse     |
+| Error  | Syntax error         |
 
-**LL(1) Parsing Table:**
-
-| NTs | id       | +           | *           | (         | )      | $      |
-| ------------ | -------- | ----------- | ----------- | --------- | ------ | ------ |
-| **E**        | E → TE' |             |             | E → TE'  |        |        |
-| **E'**       |          | E' → +TE' |             |           | E' → ε | E' → ε |
-| **T**        | T → FT' |             |             | T →  T'  |        |        |
-| **T'**       |          | T' → ε      | T' → *FT' |           | T' → ε | T' → ε |
-| **F**        | F → id   |             |             | F → (E) |        |        |
-
-
-**LL(1) Condition:**
-A grammar is **LL(1)** if **each cell in the parsing table contains at most one production rule**, ensuring there are no parsing conflicts.
-
-
-### 4.1 Bottom-Up Parsing
-
-Bottom-up parsing builds the parse tree from leaves to root (reverse of derivation).
-
-**Key Concepts:**
-- **Handle:** Substring matching the right side of a production
-- **Reduction:** Replacing handle with left side non-terminal
-- **Shift-Reduce Actions:**
-  - **Shift:** Move next input symbol onto stack
-  - **Reduce:** Replace handle on stack with non-terminal
-  - **Accept:** Parsing completed successfully
-  - **Error:** Syntax error detected
+---
 
 ### 4.2 LR Parsing
 
-**LR(k):** Left-to-right scan, Rightmost derivation in reverse, k lookahead symbols
+**LR(k)** = Left-to-right scan, Rightmost derivation in reverse.
 
-**LR Parser Components:**
+More powerful than LL(1), used in real compilers.
+
+Diagram:
+
 ```dot
 digraph LRParser {
     rankdir=LR;
     node [shape=box];
-    
-    input [label="Input\na$"];
-    stack [label="Stack"];
-    table [label="Parsing Table\nACTION | GOTO"];
-    driver [label="LR Parsing\nProgram"];
-    output [label="Output"];
-    
-    input -> driver;
-    stack -> driver;
-    driver -> table;
-    table -> driver;
-    driver -> stack;
-    driver -> output;
+    input [label="Input a$"]; stack [label="Stack"]; table [label="ACTION | GOTO"]; driver [label="LR Parser"]; output [label="Output"]; input -> driver; stack -> driver; driver -> table; table -> driver; driver -> stack; driver -> output;
 }
 ```
-
-### 4.3 LR(0) Items
-
-An **LR(0) item** is a production with a dot (•) indicating parsing position.
-
-**For production A → XYZ, items are:**
-```
-A → •XYZ
-A → X•YZ
-A → XY•Z
-A → XYZ•
-```
-
-### 4.4 SLR(1) Parsing
-
-**Simple LR(1):** Uses FOLLOW sets to resolve conflicts.
-
-**Construction Steps:**
-1. Build canonical collection of LR(0) items
-2. Construct parsing table using FOLLOW sets
-
-**Example Grammar:**
-```
-S' → S
-S → CC
-C → cC | d
-```
-
-**Item Sets (I₀, I₁, ...):**
-
-I₀:
-```
-S' → •S
-S → •CC
-C → •cC
-C → •d
-```
-
-**SLR Parsing Table:**
-
-| State | c   | d   | $   | S   | C   |
-|-------|-----|-----|-----|-----|-----|
-| 0     | s3  | s4  |     | 1   | 2   |
-| 1     |     |     | acc |     |     |
-| 2     | s6  | s7  |     |     | 5   |
-| 3     | s3  | s4  |     |     | 8   |
-| 4     | r3  | r3  | r3  |     |     |
-| 5     |     |     | r1  |     |     |
-| 6     | s6  | s7  |     |     | 9   |
-| 7     | r3  | r3  | r3  |     |     |
-| 8     | r2  | r2  | r2  |     |     |
-| 9     | r2  | r2  | r2  |     |     |
-
-### 4.5 LR(1) Parsing
-
-**Canonical LR(1):** Items include lookahead symbol.
-
-**LR(1) Item Format:** `[A → α•β, a]`
-- Production with dot position
-- Lookahead terminal a
-
-**More powerful than SLR(1) but larger tables.**
-
-### 4.6 LALR(1) Parsing
-
-**Look-Ahead LR(1):** Merges LR(1) states with same core.
-
-**Advantages:**
-- Smaller tables than LR(1)
-- More powerful than SLR(1)
-- Used by YACC/Bison
-
-**Comparison:**
-
-| Method   | Power   | Table Size |
-|----------|---------|------------|
-| SLR(1)   | Weakest | Small      |
-| LALR(1)  | Medium  | Medium     |
-| LR(1)    | Strongest| Large     |
-
-</br>
-</br>
-</br>
-</br>
-</br>
