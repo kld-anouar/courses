@@ -697,16 +697,76 @@ They find **handles** and apply **shift–reduce** operations.
 
 ### 4.2 LR Parsing
 
-**LR(k)** = Left-to-right scan, Rightmost derivation in reverse.
+**LR Parsing** is the most general bottom‑up method used in real compilers. It uses a parsing table to decide whether to **shift**, **reduce**, **accept**, or **error**.
 
-More powerful than LL(1), used in real compilers.
+There are multiple variants:
 
-Diagram:
+| Parser Type | Power       | Table Size | Notes                                   |
+| ----------- | ----------- | ---------- | --------------------------------------- |
+| **SLR(1)**  | Basic       | Small      | Uses FOLLOW sets for reduce decisions   |
+| **LALR(1)** | Medium–High | Medium     | Merges LR(1) states, used by YACC/Bison |
+| **LR(1)**   | Highest     | Large      | Most accurate, largest tables           |
 
-```dot
-digraph LRParser {
-    rankdir=LR;
-    node [shape=box];
-    input [label="Input a$"]; stack [label="Stack"]; table [label="ACTION | GOTO"]; driver [label="LR Parser"]; output [label="Output"]; input -> driver; stack -> driver; driver -> table; table -> driver; driver -> stack; driver -> output;
-}
+Let's explain each clearly.
+
+
+### ✅ SLR(1) – Simple LR
+
+* Uses **FOLLOW sets** to decide reductions
+* Simple and compact
+* May have conflicts on ambiguous FOLLOW sets
+
+**Example Grammar:**
+
 ```
+S → CC
+C → cC | d
+```
+
+**Key Idea:** When reducing `C → d`, we check if next token is in **FOLLOW(C)**.
+
+If yes → reduce. Otherwise → error.
+
+💡 Easier but may make wrong reduce decisions.
+
+
+### ✅ LR(1) – Canonical LR
+
+* **Most powerful** bottom‑up parser
+* Tracks **lookahead** for every item
+* Eliminates most conflicts
+* Tables are large
+
+**LR(1) Item example:**
+
+```
+[C → c•C, $]
+```
+
+Meaning: we are parsing `C → cC` and lookahead is `$`.
+
+💡 Precise but expensive – used in formal compiler theory.
+
+---
+
+### ✅ LALR(1) – Lookahead LR
+
+* Combines power of LR(1) with size near SLR(1)
+* Merges LR(1) states with same core
+* Used in **industrial parser generators** (YACC/Bison)
+
+**Benefit:**
+
+* Keeps accuracy of lookaheads
+* Avoids huge tables
+
+💡 The "sweet spot" in real compilers.
+
+
+### 📌 Summary of Bottom‑Up Techniques
+
+| Method  | Easy   | Fast     | Accurate               | Used in Practice        |
+| ------- | ------ | -------- | ---------------------- | ----------------------- |
+| SLR(1)  | ✅      | ✅        | ⚠️ Sometimes ambiguous | Rarely                  |
+| LALR(1) | ✅      | ✅        | ✅                      | ✅ Yes (YACC/Bison)      |
+| LR(1)   | ❌ Hard | ⚠️ Heavy | ✅ Very accurate        | Research/advanced tools |
