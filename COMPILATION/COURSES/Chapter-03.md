@@ -567,13 +567,12 @@ There are two major categories of parsing techniques:
 
 We start with **top-down** parsers as they are more intuitive.
 
----
 
 ### 3.1 Overview of Parsing Methods
 
 Before diving into the details, let's clearly introduce the two families of parsing approaches used in compiler design:
 
-#### ✅ Top‑Down (Descending) Parsing
+####  Top‑Down (Descending) Parsing
 
 * Starts from the **start symbol** and tries to **predict** the input
 * Builds the parse tree **from root to leaves**
@@ -589,7 +588,7 @@ Before diving into the details, let's clearly introduce the two families of pars
 
 > "What rule should I apply next to match the input token?"
 
-#### ✅ Bottom‑Up Parsing
+####  Bottom‑Up Parsing
 
 * Starts from the **input tokens** and tries to **reduce** them to the start symbol
 * Builds the parse tree **from leaves to root**
@@ -607,9 +606,7 @@ Before diving into the details, let's clearly introduce the two families of pars
 
 > "What part of the input can I reduce to a non‑terminal now?"
 
----
 
----
 
 ### 3.2 Top-Down Parsing
 
@@ -617,7 +614,6 @@ Top-down parsers start from the start symbol and try to derive the input string.
 
 They "predict" which grammar rule to use.
 
----
 
 #### 3.2.1 Recursive Descent Parsing
 
@@ -660,7 +656,6 @@ void T() {
 
 **Note:** Works only for grammars without left recursion.
 
----
 
 #### 3.2.2 LL(1) Parsing
 
@@ -685,7 +680,6 @@ To fill table:
 
 **Condition:** Each cell has **at most one** rule ⇒ no conflicts.
 
----
 
 ### 4. Bottom-Up Parsing
 
@@ -700,7 +694,6 @@ They find **handles** and apply **shift–reduce** operations.
 | Accept | Successful parse     |
 | Error  | Syntax error         |
 
----
 
 ### 4.2 LR Parsing
 
