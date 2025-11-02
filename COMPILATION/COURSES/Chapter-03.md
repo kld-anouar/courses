@@ -22,16 +22,19 @@ polygon[fill="white"] {
 }
 </style>
 
-## Chapter 2: Syntactic Analysis
+## Chapter 3: Syntactic Analysis
+**Course:** Compilation / Syntactic Analysis
+**Instructor:** Dr. Anouar Khaldi
 
-### 2.1 Introduction to Syntax Analysis
+---
+### 3.1 Introduction to Syntax Analysis
 
 Syntax analysis (parsing) checks if the token sequence conforms to the grammar rules and builds a parse tree.
 
 **Input:** Token stream from lexical analyzer  
 **Output:** Parse tree or syntax tree
 
-### 2.2 Context-Free Grammars (CFG)
+### 3.2 Context-Free Grammars (CFG)
 
 A grammar $G$ is defined as: $G = (N, T, P, S)$
 
@@ -75,7 +78,7 @@ F → (E) | id
 ---
 
 
-### 2.3 Derivations and Parse Trees
+### 3.3 Derivations and Parse Trees
 
 **Leftmost Derivation:** Always expand the leftmost non-terminal first  
 **Rightmost Derivation:** Always expand the rightmost non-terminal first
@@ -418,9 +421,9 @@ E
 </g>
 </svg>
 
-### 2.4 Problems in Grammar Design
+### 3.4 Problems in Grammar Design
 
-#### 2.4.1 Ambiguity
+#### 3.4.1 Ambiguity
 
 A grammar is ambiguous if there exists a string with two or more distinct parse trees.
 
@@ -445,7 +448,7 @@ T → T * F | F
 F → id
 ```
 
-#### 2.4.2 Left Recursion
+#### 3.4.2 Left Recursion
 
 A grammar is **left-recursive** if a nonterminal `A` can derive a string that begins with itself, i.e. `A ⇒⁺ Aα`.
 
@@ -484,7 +487,7 @@ E' → +TE' | ε
 Now the grammar is **right-recursive**, avoiding infinite loops in top-down parsing.
 
 
-#### 2.4.3 Left Factorization
+#### 3.4.3 Left Factorization
 
 When two productions start with the same prefix, parser cannot decide which to use.
 
@@ -499,9 +502,9 @@ S → if E then S S'
 S' → else S | ε
 ```
 
-### 2.5 First and Follow Sets
+### 3.5 First and Follow Sets
 
-#### 2.5.1 First Set
+#### 3.5.1 First Set
 
 **FIRST(α):** Set of terminals that can appear as the first symbol in strings derived from α.
 
@@ -535,7 +538,7 @@ FIRST(E') = {+, ε}
 FIRST(T') = {*, ε}
 ```
 
-#### 2.5.2 Follow Set
+#### 3.5.2 Follow Set
 
 **FOLLOW(A):** Set of terminals that can appear immediately after A.
 
@@ -554,7 +557,7 @@ FOLLOW(T)  = {+, ), $}
 FOLLOW(T') = {+, ), $}
 FOLLOW(F)  = {*, +, ), $}
 ```
-### 3. Introduction to Parsing
+### 3.6 Introduction to Parsing
 
 Parsing is the phase of a compiler that checks whether the input program follows the grammar of the programming language and builds its syntactic structure.
 
@@ -568,7 +571,7 @@ There are two major categories of parsing techniques:
 We start with **top-down** parsers as they are more intuitive.
 
 
-### 3.1 Overview of Parsing Methods
+### 3.6.1 Overview of Parsing Methods
 
 Before diving into the details, let's clearly introduce the two families of parsing approaches used in compiler design:
 
@@ -608,14 +611,14 @@ Before diving into the details, let's clearly introduce the two families of pars
 
 
 
-### 3.2 Top-Down Parsing
+### 3.6.2 Top-Down Parsing
 
 Top-down parsers start from the start symbol and try to derive the input string.
 
 They "predict" which grammar rule to use.
 
 
-#### 3.2.1 Recursive Descent Parsing
+#### Recursive Descent Parsing
 
 **Idea:** For each non-terminal, write a C function that parses it.
 
@@ -657,7 +660,7 @@ void T() {
 **Note:** Works only for grammars without left recursion.
 
 
-#### 3.2.2 LL(1) Parsing
+#### LL(1) Parsing
 
 **LL(1)** = **L**eft-to-right scan, **L**eftmost derivation, **1** lookahead token.
 
@@ -681,7 +684,7 @@ To fill table:
 **Condition:** Each cell has **at most one** rule ⇒ no conflicts.
 
 
-### 4. Bottom-Up Parsing
+### 3.6.3 Bottom-Up Parsing
 
 Bottom-up parsers start from the input and **reduce** it back to the start symbol.
 
@@ -695,7 +698,7 @@ They find **handles** and apply **shift–reduce** operations.
 | Error  | Syntax error         |
 
 
-### 4.2 LR Parsing
+### LR Parsing
 
 **LR Parsing** is the most general bottom‑up method used in real compilers. It uses a parsing table to decide whether to **shift**, **reduce**, **accept**, or **error**.
 
@@ -710,7 +713,7 @@ There are multiple variants:
 Let's explain each clearly.
 
 
-### ✅ SLR(1) – Simple LR
+### SLR(1) – Simple LR
 
 * Uses **FOLLOW sets** to decide reductions
 * Simple and compact
@@ -730,7 +733,7 @@ If yes → reduce. Otherwise → error.
 💡 Easier but may make wrong reduce decisions.
 
 
-### ✅ LR(1) – Canonical LR
+### LR(1) – Canonical LR
 
 * **Most powerful** bottom‑up parser
 * Tracks **lookahead** for every item
@@ -749,7 +752,7 @@ Meaning: we are parsing `C → cC` and lookahead is `$`.
 
 ---
 
-### ✅ LALR(1) – Lookahead LR
+### LALR(1) – Lookahead LR
 
 * Combines power of LR(1) with size near SLR(1)
 * Merges LR(1) states with same core
@@ -759,14 +762,3 @@ Meaning: we are parsing `C → cC` and lookahead is `$`.
 
 * Keeps accuracy of lookaheads
 * Avoids huge tables
-
-💡 The "sweet spot" in real compilers.
-
-
-<!-- ### 📌 Summary of Bottom‑Up Techniques
-
-| Method  | Easy   | Fast     | Accurate               | Used in Practice        |
-| ------- | ------ | -------- | ---------------------- | ----------------------- |
-| SLR(1)  | ✅      | ✅        | ⚠️ Sometimes ambiguous | Rarely                  |
-| LALR(1) | ✅      | ✅        | ✅                      | ✅ Yes (YACC/Bison)      |
-| LR(1)   | ❌ Hard | ⚠️ Heavy | ✅ Very accurate        | Research/advanced tools | -->

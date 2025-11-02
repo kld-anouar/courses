@@ -28,13 +28,8 @@ polygon[fill="white"] {
 
 ---
 
-## Lexical Analysis
 
-### Overview • Tokens • Formal Languages • Regular Expressions • Examples
-
----
-
-## Overview of Lexical Analysis
+## 2.1 Overview of Lexical Analysis
 
 Lexical analysis is the **first phase** of the compiler front‑end.
 
@@ -47,7 +42,7 @@ It:
 
 ---
 
-## Definition
+## 2.2 Definition
 
 Lexical Analysis (Tokenization) transforms a **sequence of characters** into a **sequence of tokens**.
 
@@ -61,9 +56,9 @@ The **Lexer** (scanner/tokenizer):
 
 ---
 
-## Key Concepts
+## 2.3 Key Concepts
 
-### Pattern
+### 2.3.1 Pattern
 
 A **pattern** is a rule (often a regular expression) defining valid words in source code.
 
@@ -75,7 +70,7 @@ Examples:
 
 ---
 
-### Lexeme
+### 2.3.2 Lexeme
 
 A **lexeme** is the actual characters in source code that match a pattern.
 
@@ -93,7 +88,7 @@ Lexemes:
 
 ---
 
-### Token
+### 2.3.3 Token
 
 A **token** is the category/class assigned to each lexeme.
 
@@ -105,7 +100,7 @@ A **token** is the category/class assigned to each lexeme.
 
 ---
 
-## Most Common Token Types
+## 2.4 Most Common Token Types
 
 * **Keywords** – `if`, `while`, `class`
 * **Identifiers** – names of variables/functions
@@ -116,7 +111,7 @@ A **token** is the category/class assigned to each lexeme.
 
 ---
 
-## Token Attributes
+## 2.5 Token Attributes
 
 Each token has:
 
@@ -138,7 +133,7 @@ IDENTIFIER, ASSIGN_OP, NUMBER, MULTIPLY_OP, IDENTIFIER, EXPONENT_OP, NUMBER
 
 ---
 
-## Lexical Error Handling
+## 2.6 Lexical Error Handling
 
 Lexical errors include:
 
@@ -156,7 +151,7 @@ Recovery techniques:
 
 ---
 
-## Formal Languages
+## 2.7 Formal Languages
 
 A **formal language** is a set of strings over an alphabet Σ.
 
@@ -174,7 +169,7 @@ Symbols:
 
 ---
 
-## Regular Expressions (Regex)
+## 2.8 Regular Expressions (Regex)
 
 A **regular expression (RE)** defines patterns to match text.
 
@@ -188,7 +183,7 @@ Example: `[0-9]+` matches `123`, `42`
 
 ---
 
-## Formal Definition of Regular Expressions
+## 2.8.1 Formal Definition of Regular Expressions
 
 Given alphabet Σ:
 
@@ -198,7 +193,7 @@ Given alphabet Σ:
 
 ---
 
-## Regular Expression Operations
+## 2.8.2 Regular Expression Operations
 
 * Union: `R|S`
 * Concatenation: `RS`
@@ -208,7 +203,7 @@ Given alphabet Σ:
 
 ---
 
-## Algebraic Properties
+## 2.8.3 Algebraic Properties
 
 | Property       | Rule                 | Example    |
 | -------------- | -------------------- | ---------- |
@@ -221,7 +216,7 @@ Given alphabet Σ:
 
 ---
 
-## Examples of Regular Expressions
+## 2.8.4 Examples of Regular Expressions
 
 | Language                       | Regular Expression              |
 | ------------------------------ | ------------------------------- |
@@ -234,7 +229,6 @@ Given alphabet Σ:
 
 ---
 
-## More Regex Examples
 
 | RE       | Meaning                   |
 | -------- | ------------------------- |
@@ -247,23 +241,23 @@ Given alphabet Σ:
 
 ---
 
-## Finite Automata in Lexical Analysis
+## 2.9 Finite Automata in Lexical Analysis
 
 Regular expressions define token patterns, but we need a machine to **recognize** them.
 That machine is the **Finite Automaton (FA)**.
 
-### Finite Automaton (FA)
+### 2.9.1 Finite Automaton (FA)
 
 * Finite number of states
 * Reads input symbol by symbol
 * Accepts input if ending in an accepting state
 
-### Types
+### 2.9.2 Types
 
 * **DFA** — Deterministic Finite Automaton (1 transition per input)
 * **NFA** — Nondeterministic Finite Automaton (multiple transitions / ε-moves)
 
-### DFA Formal Definition
+### 2.9.3 DFA Formal Definition
 
 ```
 M = (Q, Σ, δ, q₀, F)
@@ -275,7 +269,7 @@ M = (Q, Σ, δ, q₀, F)
 * `q₀`: start state
 * `F`: accepting states
 
-### Example DFA: Strings ending in `1`
+### 2.9.4 Example DFA: Strings ending in `1`
 
 ```
 State | 0   | 1

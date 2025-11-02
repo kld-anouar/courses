@@ -1,28 +1,19 @@
 # Compilation – Introduction
+
 **Course:** Compilation / Introduction
 **Instructor:** Dr. Anouar Khaldi
 
----
+## 1 Introduction
 
-**Democratic and Popular Republic of Algeria**
-**Ministry of Higher Education and Scientific Research**
-**University of Kasdi Merbah, Ouargla**
-*Computer Security Engineer*
+### 1.1 Definition • Pipeline • Purpose • Example
 
-**October 2025**
-
-## Introduction
-
-### Definition • Pipeline • Purpose • Example
-
-
-## Introduction to Compilation
+## 2 Introduction to Compilation
 
 Programming languages like **C, Java, Python** are human‑friendly.
 Computers only understand **machine code (binary)**.
 A **compiler** translates between them.
 
-### What is Compilation?
+### 2.1 What is Compilation?
 
 | High‑level language | → | Low‑level language |
 | ------------------- | - | ------------------ |
@@ -35,7 +26,7 @@ A **compiler** is software that translates high‑level code into machine code.
 * **Error Detection** – Finds syntax & semantic errors
 * **Optimization** – Improves performance
 
-## Compiler vs Interpreter
+## 3 Compiler vs Interpreter
 
 | Feature        | Compiler            | Interpreter          |
 | -------------- | ------------------- | -------------------- |
@@ -45,34 +36,33 @@ A **compiler** is software that translates high‑level code into machine code.
 | Error Handling | Reports all errors  | Stops at first error |
 | Examples       | C, C++, Go          | Python, JavaScript   |
 
+## 4 Compilation Pipeline
 
-## Compilation Pipeline
-
-### Front‑End
+### 4.1 Front‑End
 
 * Lexical Analysis
 * Syntax Analysis
 * Semantic Analysis
 
-> Ensures correctness
+Ensures correctness
 
-### Back‑End
+### 4.2 Back‑End
 
 * Optimization
 * Code Generation
 * Linking & Loading
 
-> Produces efficient executable
+Produces efficient executable
 
-## Example: Compilation Stages
+## 5 Example: Compilation Stages
 
-### Source Code
+### 5.1 Source Code
 
 ```
 position = initial + rate * 60
 ```
 
-### 1️⃣ Lexical Analysis
+### 5.2 Lexical Analysis
 
 | Lexeme     | Token          |
 | ---------- | -------------- |
@@ -90,7 +80,7 @@ Token stream:
 <id, E1> <=> <id, E2> <+> <id, E3> <*> <num, 60>
 ```
 
-### 2️⃣ Syntax Analysis
+### 5.3 Syntax Analysis
 
 Parse tree created
 
@@ -104,11 +94,11 @@ Parse tree created
         └── 60
 ```
 
-### 3️⃣ Semantic Analysis
+### 5.4 Semantic Analysis
 
 Adds type info / checks types
 
-### 4️⃣ Intermediate Code
+### 5.5 Intermediate Code
 
 ```
 t1 = inttofloat(60)
@@ -117,14 +107,14 @@ t3 = id2 + t2
 id1 = t3
 ```
 
-### 5️⃣ Optimization
+### 5.6 Optimization
 
 ```
 t1 = id3 * 60.0
 id1 = id2 + t1
 ```
 
-### 6️⃣ Code Generation (Assembly‑like)
+### 5.7 Code Generation (Assembly‑like)
 
 ```
 IDF R2, id3
@@ -134,13 +124,13 @@ ADDF R1, R1, R2
 STF id1, R1
 ```
 
-### 7️⃣ Linking & Loading
+### 5.8 Linking & Loading
 
 * Links object code with libraries
 * Loads executable into memory
 * Program runs
 
-## Applications of Compiler Design
+## 6 Applications of Compiler Design
 
 * Programming language development
 * IDEs, debuggers, analyzers
