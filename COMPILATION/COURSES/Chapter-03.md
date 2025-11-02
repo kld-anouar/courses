@@ -763,10 +763,10 @@ Meaning: we are parsing `C → cC` and lookahead is `$`.
 💡 The "sweet spot" in real compilers.
 
 
-### 📌 Summary of Bottom‑Up Techniques
+<!-- ### 📌 Summary of Bottom‑Up Techniques
 
 | Method  | Easy   | Fast     | Accurate               | Used in Practice        |
 | ------- | ------ | -------- | ---------------------- | ----------------------- |
 | SLR(1)  | ✅      | ✅        | ⚠️ Sometimes ambiguous | Rarely                  |
 | LALR(1) | ✅      | ✅        | ✅                      | ✅ Yes (YACC/Bison)      |
-| LR(1)   | ❌ Hard | ⚠️ Heavy | ✅ Very accurate        | Research/advanced tools |
+| LR(1)   | ❌ Hard | ⚠️ Heavy | ✅ Very accurate        | Research/advanced tools | -->
