@@ -3,17 +3,13 @@
 **Course:** Compilation / Introduction
 **Instructor:** Dr. Anouar Khaldi
 
-## 1 Introduction
-
-### 1.1 Definition • Pipeline • Purpose • Example
-
-## 2 Introduction to Compilation
+## 1.1 Introduction to Compilation
 
 Programming languages like **C, Java, Python** are human‑friendly.
 Computers only understand **machine code (binary)**.
 A **compiler** translates between them.
 
-### 2.1 What is Compilation?
+### 1.2 What is Compilation?
 
 | High‑level language | → | Low‑level language |
 | ------------------- | - | ------------------ |
@@ -26,7 +22,7 @@ A **compiler** is software that translates high‑level code into machine code.
 * **Error Detection** – Finds syntax & semantic errors
 * **Optimization** – Improves performance
 
-## 3 Compiler vs Interpreter
+## 1.3 Compiler vs Interpreter
 
 | Feature        | Compiler            | Interpreter          |
 | -------------- | ------------------- | -------------------- |
@@ -36,9 +32,9 @@ A **compiler** is software that translates high‑level code into machine code.
 | Error Handling | Reports all errors  | Stops at first error |
 | Examples       | C, C++, Go          | Python, JavaScript   |
 
-## 4 Compilation Pipeline
+## 1.4 Compilation Pipeline
 
-### 4.1 Front‑End
+### 1.4.1 Front‑End
 
 * Lexical Analysis
 * Syntax Analysis
@@ -46,7 +42,7 @@ A **compiler** is software that translates high‑level code into machine code.
 
 Ensures correctness
 
-### 4.2 Back‑End
+### 1.4.2 Back‑End
 
 * Optimization
 * Code Generation
@@ -54,15 +50,15 @@ Ensures correctness
 
 Produces efficient executable
 
-## 5 Example: Compilation Stages
+## 1.5 Example: Compilation Stages
 
-### 5.1 Source Code
+### 1.5.1 Source Code
 
 ```
 position = initial + rate * 60
 ```
 
-### 5.2 Lexical Analysis
+### 1.5.2 Lexical Analysis
 
 | Lexeme     | Token          |
 | ---------- | -------------- |
@@ -80,7 +76,7 @@ Token stream:
 <id, E1> <=> <id, E2> <+> <id, E3> <*> <num, 60>
 ```
 
-### 5.3 Syntax Analysis
+### 1.5.3 Syntax Analysis
 
 Parse tree created
 
@@ -94,11 +90,11 @@ Parse tree created
         └── 60
 ```
 
-### 5.4 Semantic Analysis
+### 1.5.4 Semantic Analysis
 
 Adds type info / checks types
 
-### 5.5 Intermediate Code
+### 1.5.5 Intermediate Code
 
 ```
 t1 = inttofloat(60)
@@ -107,14 +103,14 @@ t3 = id2 + t2
 id1 = t3
 ```
 
-### 5.6 Optimization
+### 1.5.6 Optimization
 
 ```
 t1 = id3 * 60.0
 id1 = id2 + t1
 ```
 
-### 5.7 Code Generation (Assembly‑like)
+### 1.5.7 Code Generation (Assembly‑like)
 
 ```
 IDF R2, id3
@@ -124,13 +120,13 @@ ADDF R1, R1, R2
 STF id1, R1
 ```
 
-### 5.8 Linking & Loading
+### 1.5.8 Linking & Loading
 
 * Links object code with libraries
 * Loads executable into memory
 * Program runs
 
-## 6 Applications of Compiler Design
+## 1.6 Applications of Compiler Design
 
 * Programming language development
 * IDEs, debuggers, analyzers
