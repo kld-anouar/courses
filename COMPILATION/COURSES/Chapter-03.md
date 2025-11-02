@@ -659,19 +659,38 @@ void T() {
 
 **Note:** Works only for grammars without left recursion.
 
-
 #### LL(1) Parsing
 
 **LL(1)** = **L**eft-to-right scan, **L**eftmost derivation, **1** lookahead token.
 
-LL(1) parsers use a **parsing table** and a stack – more systematic than recursive descent.
+LL(1) parsers use a **parsing table** and a **stack**.
 
 To fill table:
 
-1. For each terminal in `FIRST(α)` add production to cell
-2. If ε in `FIRST(α)`, add to FOLLOW(A) cells
+1. For each terminal in `FIRST(α)`, add `A → α` to the table
+2. If `ε ∈ FIRST(α)`, then for each terminal in `FOLLOW(A)`, add `A → ε`
 
-**LL(1) Table Example:** *(same grammar)*
+**Grammar:**
+
+```
+E  → T E'
+E' → + T E' | ε
+T  → F T'
+F  → ( E ) | id
+T' → * F T' | ε
+```
+
+**FIRST & FOLLOW sets:**
+
+| NT | FIRST     | FOLLOW         |
+| -- | --------- | -------------- |
+| E  | { (, id } | { ), $ }       |
+| E' | { +, ε }  | { ), $ }       |
+| T  | { (, id } | { +, ), $ }    |
+| T' | { *, ε }  | { +, ), $ }    |
+| F  | { (, id } | { *, +, ), $ } |
+
+**LL(1) Table:**
 
 | NTs | id    | +       | *       | (     | )    | $    |
 | --- | ----- | ------- | ------- | ----- | ---- | ---- |
@@ -681,7 +700,7 @@ To fill table:
 | T'  |       | T'→ε    | T'→*FT' |       | T'→ε | T'→ε |
 | F   | F→id  |         |         | F→(E) |      |      |
 
-**Condition:** Each cell has **at most one** rule ⇒ no conflicts.
+**Condition:** Each entry must contain **at most one production**.
 
 
 ### 3.6.3 Bottom-Up Parsing
