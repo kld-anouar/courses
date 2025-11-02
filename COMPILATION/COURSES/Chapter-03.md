@@ -589,8 +589,6 @@ Before diving into the details, let's clearly introduce the two families of pars
 
 **Key idea:**
 
-> "What rule should I apply next to match the input token?"
-
 ####  Bottom‑Up Parsing
 
 * Starts from the **input tokens** and tries to **reduce** them to the start symbol
@@ -604,11 +602,6 @@ Before diving into the details, let's clearly introduce the two families of pars
 * SLR(1)
 * LALR(1)
 * LR(1)
-
-**Key idea:**
-
-> "What part of the input can I reduce to a non‑terminal now?"
-
 
 
 ### 3.6.2 Top-Down Parsing
