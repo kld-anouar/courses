@@ -557,9 +557,7 @@ FOLLOW(T)  = {+, ), $}
 FOLLOW(T') = {+, ), $}
 FOLLOW(F)  = {*, +, ), $}
 ```
-### 3.6 Introduction to Parsing
-
-Parsing is the phase of a compiler that checks whether the input program follows the grammar of the programming language and builds its syntactic structure.
+### 3.6 Parsing Categories
 
 There are two major categories of parsing techniques:
 
@@ -568,48 +566,116 @@ There are two major categories of parsing techniques:
 | **Top-Down Parsing**  | Left-to-right | Leftmost derivation               | Recursive Descent, LL(1)      |
 | **Bottom-Up Parsing** | Left-to-right | Rightmost derivation (in reverse) | LR(0), SLR(1), LALR(1), LR(1) |
 
-We start with **top-down** parsers as they are more intuitive.
-
-
-### 3.6.1 Overview of Parsing Methods
-
-Before diving into the details, let's clearly introduce the two families of parsing approaches used in compiler design:
-
-####  Top‑Down (Descending) Parsing
+<!-- ####  Top‑Down (Descending) Parsing
 
 * Starts from the **start symbol** and tries to **predict** the input
 * Builds the parse tree **from root to leaves**
 * Follows **leftmost derivation**
 * Most intuitive method
 
-**Examples:**
-
-* Recursive Descent Parsing
-* LL(1) Parsing
-
-**Key idea:**
-
 ####  Bottom‑Up Parsing
 
 * Starts from the **input tokens** and tries to **reduce** them to the start symbol
 * Builds the parse tree **from leaves to root**
 * Follows **rightmost derivation in reverse**
-* Used in real-world compilers (YACC, Bison)
-
-**Examples:**
-
-* LR(0)
-* SLR(1)
-* LALR(1)
-* LR(1)
-
+* Used in real-world compilers (YACC, Bison) -->
 
 ### 3.6.2 Top-Down Parsing
 
 Top-down parsers start from the start symbol and try to derive the input string.
 
-They "predict" which grammar rule to use.
+#### Example Grammar
+We use the following grammar and input:
+```
+E → E + T | T
+T → id
 
+Input: id + id
+```
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="206pt" height="260pt" viewBox="0.00 0.00 206.00 260.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>TopDownTree</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-256 202,-256 202,4 -4,4"/>
+<!-- E0 -->
+<g id="node1" class="node">
+<title>E0</title>
+<path fill="none" stroke="black" d="M114,-252C114,-252 84,-252 84,-252 78,-252 72,-246 72,-240 72,-240 72,-228 72,-228 72,-222 78,-216 84,-216 84,-216 114,-216 114,-216 120,-216 126,-222 126,-228 126,-228 126,-240 126,-240 126,-246 120,-252 114,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-229.8" font-family="Times,serif" font-size="14.00">E</text>
+</g>
+<!-- E1 -->
+<g id="node2" class="node">
+<title>E1</title>
+<path fill="none" stroke="black" d="M42,-180C42,-180 12,-180 12,-180 6,-180 0,-174 0,-168 0,-168 0,-156 0,-156 0,-150 6,-144 12,-144 12,-144 42,-144 42,-144 48,-144 54,-150 54,-156 54,-156 54,-168 54,-168 54,-174 48,-180 42,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">E</text>
+</g>
+<!-- E0&#45;&gt;E1 -->
+<g id="edge1" class="edge">
+<title>E0-&gt;E1</title>
+<path fill="none" stroke="black" d="M81.2,-215.7C72.72,-207.45 62.41,-197.43 53.07,-188.35"/>
+<polygon fill="black" stroke="black" points="55.54,-185.86 45.93,-181.4 50.66,-190.88 55.54,-185.86"/>
+</g>
+<!-- plus -->
+<g id="node3" class="node">
+<title>plus</title>
+<path fill="none" stroke="black" d="M114,-180C114,-180 84,-180 84,-180 78,-180 72,-174 72,-168 72,-168 72,-156 72,-156 72,-150 78,-144 84,-144 84,-144 114,-144 114,-144 120,-144 126,-150 126,-156 126,-156 126,-168 126,-168 126,-174 120,-180 114,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">+</text>
+</g>
+<!-- E0&#45;&gt;plus -->
+<g id="edge2" class="edge">
+<title>E0-&gt;plus</title>
+<path fill="none" stroke="black" d="M99,-215.7C99,-208.41 99,-199.73 99,-191.54"/>
+<polygon fill="black" stroke="black" points="102.5,-191.62 99,-181.62 95.5,-191.62 102.5,-191.62"/>
+</g>
+<!-- T2 -->
+<g id="node4" class="node">
+<title>T2</title>
+<path fill="none" stroke="black" d="M186,-180C186,-180 156,-180 156,-180 150,-180 144,-174 144,-168 144,-168 144,-156 144,-156 144,-150 150,-144 156,-144 156,-144 186,-144 186,-144 192,-144 198,-150 198,-156 198,-156 198,-168 198,-168 198,-174 192,-180 186,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="171" y="-157.8" font-family="Times,serif" font-size="14.00">T</text>
+</g>
+<!-- E0&#45;&gt;T2 -->
+<g id="edge3" class="edge">
+<title>E0-&gt;T2</title>
+<path fill="none" stroke="black" d="M116.8,-215.7C125.28,-207.45 135.59,-197.43 144.93,-188.35"/>
+<polygon fill="black" stroke="black" points="147.34,-190.88 152.07,-181.4 142.46,-185.86 147.34,-190.88"/>
+</g>
+<!-- T3 -->
+<g id="node5" class="node">
+<title>T3</title>
+<path fill="none" stroke="black" d="M42,-108C42,-108 12,-108 12,-108 6,-108 0,-102 0,-96 0,-96 0,-84 0,-84 0,-78 6,-72 12,-72 12,-72 42,-72 42,-72 48,-72 54,-78 54,-84 54,-84 54,-96 54,-96 54,-102 48,-108 42,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-85.8" font-family="Times,serif" font-size="14.00">T</text>
+</g>
+<!-- E1&#45;&gt;T3 -->
+<g id="edge4" class="edge">
+<title>E1-&gt;T3</title>
+<path fill="none" stroke="black" d="M27,-143.7C27,-136.41 27,-127.73 27,-119.54"/>
+<polygon fill="black" stroke="black" points="30.5,-119.62 27,-109.62 23.5,-119.62 30.5,-119.62"/>
+</g>
+<!-- id2 -->
+<g id="node7" class="node">
+<title>id2</title>
+<path fill="none" stroke="black" d="M186,-108C186,-108 156,-108 156,-108 150,-108 144,-102 144,-96 144,-96 144,-84 144,-84 144,-78 150,-72 156,-72 156,-72 186,-72 186,-72 192,-72 198,-78 198,-84 198,-84 198,-96 198,-96 198,-102 192,-108 186,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="171" y="-85.8" font-family="Times,serif" font-size="14.00">id</text>
+</g>
+<!-- T2&#45;&gt;id2 -->
+<g id="edge6" class="edge">
+<title>T2-&gt;id2</title>
+<path fill="none" stroke="black" d="M171,-143.7C171,-136.41 171,-127.73 171,-119.54"/>
+<polygon fill="black" stroke="black" points="174.5,-119.62 171,-109.62 167.5,-119.62 174.5,-119.62"/>
+</g>
+<!-- id1 -->
+<g id="node6" class="node">
+<title>id1</title>
+<path fill="none" stroke="black" d="M42,-36C42,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 42,0 42,0 48,0 54,-6 54,-12 54,-12 54,-24 54,-24 54,-30 48,-36 42,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">id</text>
+</g>
+<!-- T3&#45;&gt;id1 -->
+<g id="edge5" class="edge">
+<title>T3-&gt;id1</title>
+<path fill="none" stroke="black" d="M27,-71.7C27,-64.41 27,-55.73 27,-47.54"/>
+<polygon fill="black" stroke="black" points="30.5,-47.62 27,-37.62 23.5,-47.62 30.5,-47.62"/>
+</g>
+</g>
+</svg>
 
 #### Recursive Descent Parsing
 
@@ -695,19 +761,184 @@ T' → * F T' | ε
 
 **Condition:** Each entry must contain **at most one production**.
 
+##### LL(1) Parsing Algorithm
+
+Now that we have the LL(1) table, let's see **how the parser uses it to check a string**.
+
+##### Parsing Steps
+
+The LL(1) parser uses:
+
+* **Stack** (initially: `$` and start symbol `E`)
+* **Input buffer** (tokens + `$`)
+* **Parsing table** (to choose productions)
+* **Pointer** to current input token
+
+##### Algorithm
+
+1. Initialize stack = `E $`
+
+2. Initialize input = `string $`
+
+3. Repeat:
+
+   * Let `X` be the top of the stack
+   * Let `a` be the current input token
+
+   **Case 1:** `X` is a terminal
+
+   * If `X == a` → pop stack, advance input
+   * Else → **error** (mismatch)
+
+   **Case 2:** `X` is a non‑terminal
+
+   * Look up parsing table entry `M[X, a]`
+   * If empty → **error** (no rule)
+   * Else → pop `X` and **push RHS of rule** (in reverse order)
+
+   **Case 3:** `X = $` and `a = $`
+
+   * **Accept** (string belongs to language)
+
+4. If input ends but stack still not matched → **reject**
+
+
+##### Example: Parse `id + id * id`
+
+Input: `id + id * id $`
+Stack: `E $`
+
+Below is the step‑by‑step simulation.
+
+#### LL(1) Parsing Trace for `id + id * id`
+
+| Step | Stack         | Input            | Action        |
+| ---- | ------------- | ---------------- | ------------- |
+| 1    | `E $`         | `id + id * id $` | `E → T E'`    |
+| 2    | `T E' $`      | `id + id * id $` | `T → F T'`    |
+| 3    | `F T' E' $`   | `id + id * id $` | `F → id`      |
+| 4    | `id T' E' $`  | `id + id * id $` | match `id`    |
+| 5    | `T' E' $`     | `+ id * id $`    | `T' → ε`      |
+| 6    | `E' $`        | `+ id * id $`    | `E' → + T E'` |
+| 7    | `+ T E' $`    | `+ id * id $`    | match `+`     |
+| 8    | `T E' $`      | `id * id $`      | `T → F T'`    |
+| 9    | `F T' E' $`   | `id * id $`      | `F → id`      |
+| 10   | `id T' E' $`  | `id * id $`      | match `id`    |
+| 11   | `T' E' $`     | `* id $`         | `T' → * F T'` |
+| 12   | `* F T' E' $` | `* id $`         | match `*`     |
+| 13   | `F T' E' $`   | `id $`           | `F → id`      |
+| 14   | `id T' E' $`  | `id $`           | match `id`    |
+| 15   | `T' E' $`     | `$`              | `T' → ε`      |
+| 16   | `E' $`        | `$`              | `E' → ε`      |
+| 17   | `$`           | `$`              | **ACCEPT**    |
+
 
 ### 3.6.3 Bottom-Up Parsing
 
 Bottom-up parsers start from the input and **reduce** it back to the start symbol.
 
-They find **handles** and apply **shift–reduce** operations.
+#### Example Grammar
+We use the following grammar and input:
+```
+E → E + T | T
+T → id
+
+Input: id + id
+```
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="206pt" height="260pt" viewBox="0.00 0.00 206.00 260.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>BottomUpTree</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-256 202,-256 202,4 -4,4"/>
+<!-- id1 -->
+<g id="node1" class="node">
+<title>id1</title>
+<path fill="none" stroke="black" d="M42,-36C42,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 42,0 42,0 48,0 54,-6 54,-12 54,-12 54,-24 54,-24 54,-30 48,-36 42,-36"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">id</text>
+</g>
+<!-- T1 -->
+<g id="node4" class="node">
+<title>T1</title>
+<path fill="none" stroke="black" d="M42,-108C42,-108 12,-108 12,-108 6,-108 0,-102 0,-96 0,-96 0,-84 0,-84 0,-78 6,-72 12,-72 12,-72 42,-72 42,-72 48,-72 54,-78 54,-84 54,-84 54,-96 54,-96 54,-102 48,-108 42,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-85.8" font-family="Times,serif" font-size="14.00">T</text>
+</g>
+<!-- id1&#45;&gt;T1 -->
+<g id="edge1" class="edge">
+<title>id1-&gt;T1</title>
+<path fill="none" stroke="black" d="M27,-36.3C27,-43.59 27,-52.27 27,-60.46"/>
+<polygon fill="black" stroke="black" points="23.5,-60.38 27,-70.38 30.5,-60.38 23.5,-60.38"/>
+</g>
+<!-- id2 -->
+<g id="node2" class="node">
+<title>id2</title>
+<path fill="none" stroke="black" d="M186,-108C186,-108 156,-108 156,-108 150,-108 144,-102 144,-96 144,-96 144,-84 144,-84 144,-78 150,-72 156,-72 156,-72 186,-72 186,-72 192,-72 198,-78 198,-84 198,-84 198,-96 198,-96 198,-102 192,-108 186,-108"/>
+<text xml:space="preserve" text-anchor="middle" x="171" y="-85.8" font-family="Times,serif" font-size="14.00">id</text>
+</g>
+<!-- T2 -->
+<g id="node5" class="node">
+<title>T2</title>
+<path fill="none" stroke="black" d="M186,-180C186,-180 156,-180 156,-180 150,-180 144,-174 144,-168 144,-168 144,-156 144,-156 144,-150 150,-144 156,-144 156,-144 186,-144 186,-144 192,-144 198,-150 198,-156 198,-156 198,-168 198,-168 198,-174 192,-180 186,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="171" y="-157.8" font-family="Times,serif" font-size="14.00">T</text>
+</g>
+<!-- id2&#45;&gt;T2 -->
+<g id="edge2" class="edge">
+<title>id2-&gt;T2</title>
+<path fill="none" stroke="black" d="M171,-108.3C171,-115.59 171,-124.27 171,-132.46"/>
+<polygon fill="black" stroke="black" points="167.5,-132.38 171,-142.38 174.5,-132.38 167.5,-132.38"/>
+</g>
+<!-- plus -->
+<g id="node3" class="node">
+<title>plus</title>
+<path fill="none" stroke="black" d="M114,-180C114,-180 84,-180 84,-180 78,-180 72,-174 72,-168 72,-168 72,-156 72,-156 72,-150 78,-144 84,-144 84,-144 114,-144 114,-144 120,-144 126,-150 126,-156 126,-156 126,-168 126,-168 126,-174 120,-180 114,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-157.8" font-family="Times,serif" font-size="14.00">+</text>
+</g>
+<!-- E2 -->
+<g id="node7" class="node">
+<title>E2</title>
+<path fill="none" stroke="black" d="M114,-252C114,-252 84,-252 84,-252 78,-252 72,-246 72,-240 72,-240 72,-228 72,-228 72,-222 78,-216 84,-216 84,-216 114,-216 114,-216 120,-216 126,-222 126,-228 126,-228 126,-240 126,-240 126,-246 120,-252 114,-252"/>
+<text xml:space="preserve" text-anchor="middle" x="99" y="-229.8" font-family="Times,serif" font-size="14.00">E</text>
+</g>
+<!-- plus&#45;&gt;E2 -->
+<g id="edge5" class="edge">
+<title>plus-&gt;E2</title>
+<path fill="none" stroke="black" d="M99,-180.3C99,-187.59 99,-196.27 99,-204.46"/>
+<polygon fill="black" stroke="black" points="95.5,-204.38 99,-214.38 102.5,-204.38 95.5,-204.38"/>
+</g>
+<!-- E1 -->
+<g id="node6" class="node">
+<title>E1</title>
+<path fill="none" stroke="black" d="M42,-180C42,-180 12,-180 12,-180 6,-180 0,-174 0,-168 0,-168 0,-156 0,-156 0,-150 6,-144 12,-144 12,-144 42,-144 42,-144 48,-144 54,-150 54,-156 54,-156 54,-168 54,-168 54,-174 48,-180 42,-180"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-157.8" font-family="Times,serif" font-size="14.00">E</text>
+</g>
+<!-- T1&#45;&gt;E1 -->
+<g id="edge3" class="edge">
+<title>T1-&gt;E1</title>
+<path fill="none" stroke="black" d="M27,-108.3C27,-115.59 27,-124.27 27,-132.46"/>
+<polygon fill="black" stroke="black" points="23.5,-132.38 27,-142.38 30.5,-132.38 23.5,-132.38"/>
+</g>
+<!-- T2&#45;&gt;E2 -->
+<g id="edge6" class="edge">
+<title>T2-&gt;E2</title>
+<path fill="none" stroke="black" d="M153.2,-180.3C144.72,-188.55 134.41,-198.57 125.07,-207.65"/>
+<polygon fill="black" stroke="black" points="122.66,-205.12 117.93,-214.6 127.54,-210.14 122.66,-205.12"/>
+</g>
+<!-- E1&#45;&gt;E2 -->
+<g id="edge4" class="edge">
+<title>E1-&gt;E2</title>
+<path fill="none" stroke="black" d="M44.8,-180.3C53.28,-188.55 63.59,-198.57 72.93,-207.65"/>
+<polygon fill="black" stroke="black" points="70.46,-210.14 80.07,-214.6 75.34,-205.12 70.46,-210.14"/>
+</g>
+</g>
+</svg>
+
+<!-- They find **handles** and apply **shift–reduce** operations.
 
 | Action | Meaning              |
 | ------ | -------------------- |
 | Shift  | Push token on stack  |
 | Reduce | Replace RHS with LHS |
 | Accept | Successful parse     |
-| Error  | Syntax error         |
+| Error  | Syntax error         | -->
 
 
 ### LR Parsing
