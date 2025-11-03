@@ -765,15 +765,6 @@ T' → * F T' | ε
 
 Now that we have the LL(1) table, let's see **how the parser uses it to check a string**.
 
-##### Parsing Steps
-
-The LL(1) parser uses:
-
-* **Stack** (initially: `$` and start symbol `E`)
-* **Input buffer** (tokens + `$`)
-* **Parsing table** (to choose productions)
-* **Pointer** to current input token
-
 ##### Algorithm
 
 1. Initialize stack = `E $`
