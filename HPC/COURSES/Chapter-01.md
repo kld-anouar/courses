@@ -3,6 +3,8 @@
 **Course:** High-Performance Computing / Introduction to Parallel Computing
 **Instructor:** Dr. Anouar Khaldi
 
+---
+
 ### 1. Why We Need Parallel Computing
 
 #### 1.1 The Limits of Sequential Computing
