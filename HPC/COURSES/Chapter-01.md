@@ -78,7 +78,8 @@ Unlike Amdahl's, efficiency improves as we increase both problem size and proces
 
 
 ### 3. Parallel Computer Architectures
-
+There are different types of parallel architectures, each with strengths and weaknesses.
+The main difference between them is how processors access and share **Memory**.
 #### 3.1 Shared Memory Systems (SMP)
 
 All processors share a **single main memory** and communicate via a common bus.
