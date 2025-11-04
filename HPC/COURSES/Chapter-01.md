@@ -1,6 +1,6 @@
 # High-Performance Computing – Introduction to Parallel Computing
 
-**Course:** High-Performance Computing / Introduction to Parallel Computing
+**Course:** High-Performance Computing / Introduction to Parallel Computing</br>
 **Instructor:** Dr. Anouar Khaldi
 
 ---

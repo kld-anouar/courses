@@ -23,7 +23,7 @@ polygon[fill="white"] {
 </style>
 
 ## Chapter 3: Syntactic Analysis
-**Course:** Compilation / Syntactic Analysis
+**Course:** Compilation / Syntactic Analysis</br>
 **Instructor:** Dr. Anouar Khaldi
 
 ---

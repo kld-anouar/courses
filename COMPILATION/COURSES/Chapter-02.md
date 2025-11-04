@@ -23,7 +23,7 @@ polygon[fill="white"] {
 </style>
 
 # Chapter 2: Lexical Analysis
-**Course:** Compilation / Lexical Analysis
+**Course:** Compilation / Lexical Analysis</br>
 **Instructor:** Dr. Anouar Khaldi
 
 ---

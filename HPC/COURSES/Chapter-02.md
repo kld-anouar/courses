@@ -1,6 +1,6 @@
 # High-Performance Computing – Models and Application Structures for Parallel Programming Interfaces
 
-**Course:** High-Performance Computing / Models and Application Structures for Parallel Programming Interfaces
+**Course:** High-Performance Computing / Models and Application Structures for Parallel Programming Interfaces</br>
 **Instructor:** Dr. Anouar Khaldi
 
 ---

@@ -1,6 +1,6 @@
 # Compilation – Introduction
 
-**Course:** Compilation / Introduction
+**Course:** Compilation / Introduction</br>
 **Instructor:** Dr. Anouar Khaldi
 
 ## 1.1 Introduction to Compilation
