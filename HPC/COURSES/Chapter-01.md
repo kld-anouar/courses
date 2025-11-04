@@ -1,4 +1,7 @@
-## Chapter I: Introduction to Parallel Computing
+# High-Performance Computing – Introduction to Parallel Computing
+
+**Course:** High-Performance Computing / Introduction to Parallel Computing
+**Instructor:** Dr. Anouar Khaldi
 
 ### 1. Why We Need Parallel Computing
 
