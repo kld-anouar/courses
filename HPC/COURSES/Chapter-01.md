@@ -11,10 +11,14 @@
 
 Modern computing problems—AI, simulation, and massive data—demand processing speeds that single CPUs can’t achieve fast enough.
 
-**Example: Weather Forecasting**
-A 3D grid with 100 million points and 1000 time steps requires ~400 billion calculations. One 3 GHz CPU would take ~37 hours. With 100 CPUs, that drops to about **22 minutes**.
+**Example: Training a Large AI Model**
 
-#### 1.2 The Power Wall
+Consider training a deep neural network with 1 billion parameters on a dataset of 100 million samples.
+Even with optimized code, a single 3 GHz CPU would take weeks to finish one full training cycle.
+
+Using 100 CPUs/GPUs in parallel reduces the training time from weeks to hours, enabling rapid development and iteration in modern AI systems.
+
+#### 1.2 The End of Clock-Speed Scaling
 
 Clock speeds hit physical limits (power, heat) around 2004. Instead of faster cores, CPUs began adding **more cores**.
 
@@ -37,9 +41,14 @@ Instead of increasing frequency, we now increase **parallelism**.
 
 ### 2. Fundamental Laws of Parallel Computing
 
+Each program has a sequential part (S) and a parallel part (P).
+Unlike the sequential part, the parallel part can speed up with more processor.
+
+ **Nb. S + P = 1**. 
+
 #### 2.1 Amdahl's Law (Speedup Limit)
 
-$$Speedup(N) = \frac{1}{S + \frac{P}{N}}$$
+$$Speedup= \frac{1}{S + \frac{P}{N}}$$
 
 Where:
 * **S** = Sequantial fraction
@@ -101,9 +110,6 @@ CPU1       CPU2      CPU3       CPU4
 * Memory contention increases with more CPUs
 * Limited scalability due to shared bus
 
-**Use case:** desktops, small servers
-=>
-
 
 #### 3.2 Distributed Memory Systems (Clusters)
 
@@ -136,13 +142,11 @@ Each node has its **own private memory**, and nodes communicate through a networ
 * Slower communication (network latency)
 * Harder programming (explicit data transfer)
 
-**Use case:** supercomputers, cloud clusters
-
 
 
 #### 3.3 NUMA (Non-Uniform Memory Access)
 
-A hybrid between SMP and Clusters. CPUs have **local memory** but can also access other sockets’ memory (slower).
+A hybrid between SMP and Clusters. CPUs have **local memory** but can also access other sockets’ memory.
 
 ```
 ┌─────────────────────────────┐        ┌─────────────────────────────┐
@@ -174,8 +178,6 @@ A hybrid between SMP and Clusters. CPUs have **local memory** but can also acces
 * Complex thread scheduling and memory locality
 * Performance drops if threads frequently use remote memory
 
-**Use case:** modern multi-socket servers (AMD EPYC, Xeon)
-
 
 
 ### 4. Summary of Architectures
@@ -186,10 +188,8 @@ A hybrid between SMP and Clusters. CPUs have **local memory** but can also acces
 | Cluster | Distributed | Network (MPI)           | Very High   | Supercomputer       |
 | NUMA    | Semi-shared | High-speed interconnect | High        | Multi-socket server |
 
-
-
-### 5. Trends in Modern Parallel Computing
-
-* **Heterogeneous computing:** CPUs + GPUs + TPUs
-* **Cloud parallelism:** distributed jobs across thousands of machines
-* **Energy-aware scheduling:** optimizing for performance-per-watt
+</br>
+</br>
+</br>
+</br>
+</br>
