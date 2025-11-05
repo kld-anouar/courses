@@ -103,21 +103,22 @@ Why choose one when you can use both? Hybrid Parallelism combines Task and Data 
 - A program is first broken down into a set of independent tasks (Task Parallelism).
 - Within each task, the data is partitioned and the same operation is applied to each partition across multiple processors (Data Parallelism).
 
-**Visual Model: A Company Structure**
+**Visual Model**
 ```
-Task 1: Marketing Dept.  Task 2: Sales Dept.      Task 3: Engineering Dept. │
-(Analyze Market Data)    (Process Sales Data)   (Run Simulations)           │
-│                        │                      │                           │
-├─ Processors 1–4        ├─ Processors 5–8      ├─ Processors 9–12          │
-│  (Data Parallelism)    │  (Data Parallelism)  │  (Data Parallelism)       │
-│  [Market Segments]     │  [Sales Regions]     │  [Simulation Parts]       │
-│  ↓                     │  ↓                   │  ↓                        │
-└────────────────────────┴─────────┬──────────┴───────────────────────────┘
-                                   │
-                              ┌────▼─────┐
-                              │ Combine Company-Wide │
-                              │      Results       │
-                              └────────────────────┘
+        Task Parallelism (different tasks running at same time)
+┌──────────────────────┬──────────────────────┬──────────────────────┐
+│        Task 1        │        Task 2        │        Task 3        │
+│                      │                      │                      │
+├── Cores 1–4          ├── Cores 5–8          ├── Cores 9–12         │
+│   (Data Parallelism) │   (Data Parallelism) │   (Data Parallelism) │
+│   [Data Chunks]      │   [Data Chunks]      │   [Data Chunks]      │
+│   ↓                  │   ↓                  │   ↓                  │
+└──────────────────────┴──────────┬───────────┴──────────────────────┘
+                                  │
+                           ┌──────▼──────┐
+                           │   Combine   │
+                           │   Results   │
+                           └─────────────┘
 ```
 
 **Key Ideas:**
