@@ -121,35 +121,39 @@ Why choose one when you can use both? Hybrid Parallelism combines Task and Data 
                            └─────────────┘
 ```
 
-**Key Ideas:**
-*   **Efficiency at Scale:** Reduces the amount of communication needed between all processors.
-*   **Fits Modern Computers:** Perfect for clusters where each computer has multiple processing cores.
-*   **More Complex:** Designing hybrid algorithms requires more careful planning.
+**Key Characteristics**
+- **Hierarchical structure**: Organizes parallelism on two levels, fitting complex problems.
+- **Architectural adaptability**: Maps well to modern computing clusters where each node has multiple cores.
+- **Reduced communication**: Limits intensive communication to small groups of processors working on the same sub-task.
+- **Increased complexity**: Requires more planning and synchronization.
 
-**When is it useful?** This is the standard for massive-scale simulations and modern machine learning on computer clusters.
+**When is it useful?** This approach is essential for large-scale applications running on supercomputers or distributed clusters, such as complex scientific simulations, climate modeling, and training very large neural networks.
 
 ---
 
 ### **2. Communicating Between Computers: The Message Passing Interface (MPI)**
 
-When your program runs on multiple computers that don't share memory (a **distributed memory** system), they need a way to talk to each other. MPI is the postal service for parallel computing. It's a standard library that lets processes send and receive messages.
+- MPI is a standardized communication protocol for parallel computing in distributed memory systems.
+- It enables processes running on different nodes (computers) to send and receive messages, allowing them to coordinate and share data.
+- Each process operates within its own private memory space and communicates explicitly through the network.
 
 #### **2.1 Core MPI Concepts**
 
 *   **Communicator:** The group of processes that are working together. `MPI_COMM_WORLD` is the default group that includes every process you started.
-*   **Rank:** Each process gets a unique ID number, like a house address, from 0 to N-1 (where N is the total number of processes).
-*   **Message:** A package of data sent from one process to another. It contains the data itself, plus a "shipping label" with the sender's rank, the receiver's rank, and a tag (to help organize messages).
+*   **Rank:** Unique ID for each process (0 to N-1) within a communicator.
+*   **Message:** Data sent between processes, including sender rank, receiver rank, and a tag.
 
-**Process Model: Independent Minds, Connected by a Network**
+**Process Model: Independent Processes, Connected by a Network**
 ```
-Process 0          Process 1          Process 2
-┌────────────┐     ┌────────────┐     ┌────────────┐
-│ Own Memory │     │ Own Memory │     │ Own Memory │
-└─────┬──────┘     └─────┬──────┘     └─────┬──────┘
-      │                  │                  │
-      └──────────────────┼──────────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Process 0  │     │  Process 1  │     │  Process 2  │
+├─────────────┤     ├─────────────┤     ├─────────────┤ 
+│  Own Memory │     │  Own Memory │     │  Own Memory │
+└─────┬───────┘     └─────┬───────┘     └─────┬───────┘
+      │                   │                   │
+      └───────────────────┼───────────────────┘
                  Communication Network
-             (Processes send messages)
+                 (MPI_Send / MPI_Recv)
 ```
 
 #### **2.2 Basic MPI Functions**
