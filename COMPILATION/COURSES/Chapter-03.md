@@ -722,52 +722,42 @@ void T() {
 
 **LL(1)** = **L**eft-to-right scan, **L**eftmost derivation, **1** lookahead token.
 
-LL(1) parsers use a **parsing table** and a **stack**.
+LL(1) parsers use a parsing **table** and a **stack**. The parsing table has rows for non-terminals and columns for terminals, which will guid the parser which production to apply.
 
-To fill table:
+**To fill an LL(1) table:**
 
-1. For each terminal in `FIRST(α)`, add `A → α` to the table
-2. If `ε ∈ FIRST(α)`, then for each terminal in `FOLLOW(A)`, add `A → ε`
+1. For each production `A → α`, look at the terminals in `FIRST(α)`. For each terminal `t` in `FIRST(α)`, put `A → α` in the table cell at row `A` and column `t`.
+2. If `ε` is in `FIRST(α)`, then for each terminal `t` in `FOLLOW(A)`, put `A → ε` in the table cell at row `A` and column `t`.
 
-**Grammar:**
+
+**Grammar (short, but with some FIRST & FOLLOW):**
 
 ```
-E  → T E'
-E' → + T E' | ε
-T  → F T'
-F  → ( E ) | id
-T' → * F T' | ε
+S → A B
+A → a | ε
+B → b
 ```
 
-**FIRST & FOLLOW sets:**
+### FIRST & FOLLOW sets
 
-| NT | FIRST     | FOLLOW         |
-| -- | --------- | -------------- |
-| E  | { (, id } | { ), $ }       |
-| E' | { +, ε }  | { ), $ }       |
-| T  | { (, id } | { +, ), $ }    |
-| T' | { *, ε }  | { +, ), $ }    |
-| F  | { (, id } | { *, +, ), $ } |
+| NT | FIRST    | FOLLOW   |
+| -- | -------- | -------- |
+| S  | { a, b } | { $ }    |
+| A  | { a, ε } | { b } |
+| B  | { b }    | { $ }    |
 
-**LL(1) Table:**
+### LL(1) Table
 
-| NTs | id    | +       | *       | (     | )    | $    |
-| --- | ----- | ------- | ------- | ----- | ---- | ---- |
-| E   | E→TE' |         |         | E→TE' |      |      |
-| E'  |       | E'→+TE' |         |       | E'→ε | E'→ε |
-| T   | T→FT' |         |         | T→FT' |      |      |
-| T'  |       | T'→ε    | T'→*FT' |       | T'→ε | T'→ε |
-| F   | F→id  |         |         | F→(E) |      |      |
+| NT | a     | b     | $ |
+| -- | ----- | ----- | - |
+| S  | S→A B | S→A B |   |
+| A  | A→a   | A→ε   |   |
+| B  |       | B→b   |   |
 
-**Condition:** Each entry must contain **at most one production**.
 
 #### LL(1) Parsing Algorithm
 
-Now that we have the LL(1) table, let's see **how the parser uses it to check a string**.
-
-##### Algorithm
-
-1. Initialize stack = `E $`
+1. Initialize stack = `S $`
 
 2. Initialize input = `string $`
 
@@ -793,35 +783,22 @@ Now that we have the LL(1) table, let's see **how the parser uses it to check a 
 
 4. If input ends but stack still not matched → **reject**
 
+##### Example: Parse `ab`
 
-##### Example: Parse `id + id * id`
+Input: `ab $`
+Stack: `S $`
 
-Input: `id + id * id $`
-Stack: `E $`
+#### LL(1) Parsing Trace for `ab`
 
-Below is the step‑by‑step simulation.
+| Step | Stack   | Input  | Action     |
+| ---- | ------- | ------ | ---------- |
+| 1    | `S $`   | `ab $` | `S → A B`  |
+| 2    | `A B $` | `ab $` | `A → a`    |
+| 3    | `a B $` | `ab $` | match `a`  |
+| 4    | `B $`   | `b $`  | `B → b`    |
+| 5    | `b $`   | `b $`  | match `b`  |
+| 6    | `$`     | `$`    | **ACCEPT** |
 
-#### LL(1) Parsing Trace for `id + id * id`
-
-| Step | Stack         | Input            | Action        |
-| ---- | ------------- | ---------------- | ------------- |
-| 1    | `E $`         | `id + id * id $` | `E → T E'`    |
-| 2    | `T E' $`      | `id + id * id $` | `T → F T'`    |
-| 3    | `F T' E' $`   | `id + id * id $` | `F → id`      |
-| 4    | `id T' E' $`  | `id + id * id $` | match `id`    |
-| 5    | `T' E' $`     | `+ id * id $`    | `T' → ε`      |
-| 6    | `E' $`        | `+ id * id $`    | `E' → + T E'` |
-| 7    | `+ T E' $`    | `+ id * id $`    | match `+`     |
-| 8    | `T E' $`      | `id * id $`      | `T → F T'`    |
-| 9    | `F T' E' $`   | `id * id $`      | `F → id`      |
-| 10   | `id T' E' $`  | `id * id $`      | match `id`    |
-| 11   | `T' E' $`     | `* id $`         | `T' → * F T'` |
-| 12   | `* F T' E' $` | `* id $`         | match `*`     |
-| 13   | `F T' E' $`   | `id $`           | `F → id`      |
-| 14   | `id T' E' $`  | `id $`           | match `id`    |
-| 15   | `T' E' $`     | `$`              | `T' → ε`      |
-| 16   | `E' $`        | `$`              | `E' → ε`      |
-| 17   | `$`           | `$`              | **ACCEPT**    |
 
 ### 3.6.3 Bottom-Up Parsing
 
