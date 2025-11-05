@@ -728,32 +728,49 @@ LL(1) parsers use a parsing **table** and a **stack**. The parsing table has row
 
 1. For each production `A → α`, look at the terminals in `FIRST(α)`. For each terminal `t` in `FIRST(α)`, put `A → α` in the table cell at row `A` and column `t`.
 2. If `ε` is in `FIRST(α)`, then for each terminal `t` in `FOLLOW(A)`, put `A → ε` in the table cell at row `A` and column `t`.
+#### LL(1) Parsing
 
+**LL(1)** = **L**eft-to-right scan, **L**eftmost derivation, **1** lookahead token.
 
-**Example:**
+LL(1) parsers use a **parsing table** and a **stack**. The parsing table has **rows for non-terminals** and **columns for terminals**, guiding the parser which production to apply.
+
+**To fill an LL(1) table:**
+
+1. For each production `A → α`, look at the terminals in `FIRST(α)`. For each terminal `t` in `FIRST(α)` (except ε), put `A → α` in the table cell at row `A` and column `t`.
+2. If `ε ∈ FIRST(α)`, then for each terminal `t` in `FOLLOW(A)`, put `A → ε` in the table cell at row `A` and column `t`.
+
+**Grammar (short, but with some FIRST & FOLLOW):**
 
 ```
 S → A B
-A → a | ε
-B → b
+A → 0 | ε
+B → 1
 ```
+
+**Explanation:**
+
+* `S` is the start symbol
+* `A` can be `0` or empty (ε)
+* `B` is `1`
+* Accepts strings: `01` and `1`
 
 ### FIRST & FOLLOW sets
 
-| NT | FIRST    | FOLLOW   |
-| -- | -------- | -------- |
-| S  | { a, b } | { $ }    |
-| A  | { a, ε } | { b } |
-| B  | { b }    | { $ }    |
+| NT | FIRST    | FOLLOW |
+| -- | -------- | ------ |
+| S  | { 0, 1 } | { $ }  |
+| A  | { 0, ε } | { 1 }  |
+| B  | { 1 }    | { $ }  |
 
 ### LL(1) Table
 
-| NT | a     | b     | $ |
+| NT | 0     | 1     | $ |
 | -- | ----- | ----- | - |
 | S  | S→A B | S→A B |   |
-| A  | A→a   | A→ε   |   |
-| B  |       | B→b   |   |
+| A  | A→0   | A→ε   |   |
+| B  |       | B→1   |   |
 
+**Condition:** Each entry must contain **at most one production**.
 
 #### LL(1) Parsing Algorithm
 
@@ -783,21 +800,22 @@ B → b
 
 4. If input ends but stack still not matched → **reject**
 
-##### Example: Parse `ab`
+##### Example: Parse `01`
 
-Input: `ab $`
+Input: `01 $`
 Stack: `S $`
 
-#### LL(1) Parsing Trace for `ab`
+#### LL(1) Parsing Trace for `01`
 
 | Step | Stack   | Input  | Action     |
 | ---- | ------- | ------ | ---------- |
-| 1    | `S $`   | `ab $` | `S → A B`  |
-| 2    | `A B $` | `ab $` | `A → a`    |
-| 3    | `a B $` | `ab $` | match `a`  |
-| 4    | `B $`   | `b $`  | `B → b`    |
-| 5    | `b $`   | `b $`  | match `b`  |
+| 1    | `S $`   | `01 $` | `S → A B`  |
+| 2    | `A B $` | `01 $` | `A → 0`    |
+| 3    | `0 B $` | `01 $` | match `0`  |
+| 4    | `B $`   | `1 $`  | `B → 1`    |
+| 5    | `1 $`   | `1 $`  | match `1`  |
 | 6    | `$`     | `$`    | **ACCEPT** |
+
 
 
 ### 3.6.3 Bottom-Up Parsing
