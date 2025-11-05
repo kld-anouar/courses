@@ -827,8 +827,6 @@ Below is the step‑by‑step simulation.
 
 Bottom-up parsers work in the **opposite direction** of top-down parsers. They start from the input tokens and **build upward** to reach the start symbol.
 
-**Think of it like this:** Imagine building a pyramid. You start with the base (input tokens) and stack blocks until you reach the top (start symbol).
-
 #### Example Grammar
 We will use this grammar throughout our examples:
 ```
@@ -923,7 +921,6 @@ Input: id + id
 </g>
 </svg>
 
----
 
 #### 3.6.3.1 What is LR Parsing?
 
@@ -934,11 +931,10 @@ Input: id + id
 LR parsing is the main method for **bottom-up** parsing. It reads your code from left to right and builds the parse tree starting from the leaves (tokens) going up to the root (start symbol).
 
 **Why do we use LR parsing?**
-- It is **more powerful** than LL parsing (top-down)
-- It can handle **left-recursive grammars** (LL cannot)
+- It is **more powerful** than LL parsing
+- It can handle **left-recursive grammars**, while LL cannot
 - It is used in **real compilers** like GCC, Java compiler, and Python compiler
 
----
 
 ##### The Four Basic Operations
 
@@ -946,14 +942,10 @@ Every LR parser uses these **4 operations**:
 
 1. **SHIFT** → Take one token from input and push it onto the stack
 2. **REDUCE** → Replace symbols on top of stack with a non-terminal (using a grammar rule)
-3. **ACCEPT** → Success! The input is correct
-4. **ERROR** → The input has a syntax error
-
----
+3. **ACCEPT** → Success! The input is correct — input string is valid and fully parsed
+4. **ERROR** → The input has a syntax error — no valid action exists.
 
 ##### Simple Example with Steps
-
-Let's see how this works with a very simple example.
 
 **Grammar:**
 ```
@@ -975,13 +967,9 @@ Let's parse this step by step:
 | 5 | $ E + | id $ | SHIFT | Move "id" to stack |
 | 6 | $ E + id | $ | REDUCE T→id | Replace "id" with T |
 | 7 | $ E + T | $ | REDUCE E→E+T | Replace "E + T" with E |
-| 8 | $ E | $ | ACCEPT | Done! Input is correct ✅ |
+| 8 | $ E | $ | ACCEPT | Done! Input is correct  |
 
 **Important:** The symbol `$` marks the end of input. It helps the parser know when to stop.
-
-**Result:** We successfully built the parse tree from bottom (tokens) to top (start symbol E).
-
----
 
 #### 3.6.3.2 How Does an LR Parser Work?
 
@@ -997,7 +985,6 @@ This table tells the parser **which state to go to** after a REDUCE.
 - **Input:** (current state, non-terminal symbol)
 - **Output:** next state number
 
----
 
 ##### LR Parsing Algorithm (Step by Step)
 
@@ -1040,9 +1027,7 @@ Step 2: Loop (repeat until ACCEPT or ERROR)
 Step 3: End
 ```
 
-**Note:** When we REDUCE using rule `A → β`, we pop `2 × |β|` items because each grammar symbol on the stack has a state number with it.
-
----
+**Note:** When we REDUCE using rule `A → β`, we pop `2 × |β|` items because each grammar symbol on the stack has a state with it.
 
 ##### Three Types of LR Parsers
 
@@ -1051,12 +1036,11 @@ There are **three main types** of LR parsers. They differ in power and table siz
 | Type | Power | Table Size | When to Use |
 |------|-------|------------|-------------|
 | **SLR(1)** | Basic | Small | For learning, simple languages |
-| **LALR(1)** | Medium | Medium | For real compilers (YACC, Bison) |
+| **LALR(1)** | Medium | Medium | For real compilers  |
 | **LR(1)** | Highest | Very Large | For theory and research |
 
 Let's study each one in detail.
 
----
 
 ## 1. SLR(1) Parser (Simple LR)
 
@@ -1185,7 +1169,7 @@ Let's trace how the parser processes the input `c d d`:
 | 4 | 0 c 1 C 4 | d $ | r2 | ACTION[4,d]=r2, reduce using C→cC |
 | 5 | 0 C 3 | d $ | s2 | ACTION[3,d]=s2, shift d and go to state 2 |
 | 6 | 0 C 3 d 2 | $ | r3 | ACTION[2,$]=r3, reduce using C→d |
-| 7 | 0 C 3 C 5 | $ | acc | ACTION[5,$]=acc, ACCEPT! ✅ |
+| 7 | 0 C 3 C 5 | $ | acc | ACTION[5,$]=acc, ACCEPT!  |
 
 **Result:** The string `c d d` is **ACCEPTED**! The parser successfully verified it matches our grammar.
 
@@ -1487,7 +1471,7 @@ T → id
 | 5 | $ E + | id $ | SHIFT id | - |
 | 6 | $ E + id | $ | REDUCE | T → id |
 | 7 | $ E + T | $ | REDUCE | E → E + T |
-| 8 | $ E | $ | ACCEPT | Success! ✅ |
+| 8 | $ E | $ | ACCEPT | Success!  |
 
 **Congratulations!** You have successfully parsed `id + id` and built the parse tree from bottom to top.
 
