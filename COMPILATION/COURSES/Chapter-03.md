@@ -761,7 +761,7 @@ T' → * F T' | ε
 
 **Condition:** Each entry must contain **at most one production**.
 
-##### LL(1) Parsing Algorithm
+#### LL(1) Parsing Algorithm
 
 Now that we have the LL(1) table, let's see **how the parser uses it to check a string**.
 
@@ -823,13 +823,14 @@ Below is the step‑by‑step simulation.
 | 16   | `E' $`        | `$`              | `E' → ε`      |
 | 17   | `$`           | `$`              | **ACCEPT**    |
 
-
 ### 3.6.3 Bottom-Up Parsing
 
-Bottom-up parsers start from the input and **reduce** it back to the start symbol.
+Bottom-up parsers work in the **opposite direction** of top-down parsers. They start from the input tokens and **build upward** to reach the start symbol.
+
+**Think of it like this:** Imagine building a pyramid. You start with the base (input tokens) and stack blocks until you reach the top (start symbol).
 
 #### Example Grammar
-We use the following grammar and input:
+We will use this grammar throughout our examples:
 ```
 E → E + T | T
 T → id
@@ -922,77 +923,590 @@ Input: id + id
 </g>
 </svg>
 
-<!-- They find **handles** and apply **shift–reduce** operations.
+---
 
-| Action | Meaning              |
-| ------ | -------------------- |
-| Shift  | Push token on stack  |
-| Reduce | Replace RHS with LHS |
-| Accept | Successful parse     |
-| Error  | Syntax error         | -->
+#### 3.6.3.1 What is LR Parsing?
 
+**LR** stands for:
+- **L** = Read input from **L**eft to right
+- **R** = Build **R**ightmost derivation (but in reverse)
 
-### LR Parsing
+LR parsing is the main method for **bottom-up** parsing. It reads your code from left to right and builds the parse tree starting from the leaves (tokens) going up to the root (start symbol).
 
-**LR Parsing** is the most general bottom‑up method used in real compilers. It uses a parsing table to decide whether to **shift**, **reduce**, **accept**, or **error**.
-
-There are multiple variants:
-
-| Parser Type | Power       | Table Size | Notes                                   |
-| ----------- | ----------- | ---------- | --------------------------------------- |
-| **SLR(1)**  | Basic       | Small      | Uses FOLLOW sets for reduce decisions   |
-| **LALR(1)** | Medium–High | Medium     | Merges LR(1) states, used by YACC/Bison |
-| **LR(1)**   | Highest     | Large      | Most accurate, largest tables           |
-
-Let's explain each clearly.
-
-
-### SLR(1) – Simple LR
-
-* Uses **FOLLOW sets** to decide reductions
-* Simple and compact
-* May have conflicts on ambiguous FOLLOW sets
-
-**Example Grammar:**
-
-```
-S → CC
-C → cC | d
-```
-
-**Key Idea:** When reducing `C → d`, we check if next token is in **FOLLOW(C)**.
-
-If yes → reduce. Otherwise → error.
-
-💡 Easier but may make wrong reduce decisions.
-
-
-### LR(1) – Canonical LR
-
-* **Most powerful** bottom‑up parser
-* Tracks **lookahead** for every item
-* Eliminates most conflicts
-* Tables are large
-
-**LR(1) Item example:**
-
-```
-[C → c•C, $]
-```
-
-Meaning: we are parsing `C → cC` and lookahead is `$`.
-
-💡 Precise but expensive – used in formal compiler theory.
+**Why do we use LR parsing?**
+- It is **more powerful** than LL parsing (top-down)
+- It can handle **left-recursive grammars** (LL cannot)
+- It is used in **real compilers** like GCC, Java compiler, and Python compiler
 
 ---
 
-### LALR(1) – Lookahead LR
+##### The Four Basic Operations
 
-* Combines power of LR(1) with size near SLR(1)
-* Merges LR(1) states with same core
-* Used in **industrial parser generators** (YACC/Bison)
+Every LR parser uses these **4 operations**:
 
-**Benefit:**
+1. **SHIFT** → Take one token from input and push it onto the stack
+2. **REDUCE** → Replace symbols on top of stack with a non-terminal (using a grammar rule)
+3. **ACCEPT** → Success! The input is correct
+4. **ERROR** → The input has a syntax error
 
-* Keeps accuracy of lookaheads
-* Avoids huge tables
+---
+
+##### Simple Example with Steps
+
+Let's see how this works with a very simple example.
+
+**Grammar:**
+```
+E → E + T
+E → T
+T → id
+```
+
+**Input:** `id + id`
+
+Let's parse this step by step:
+
+| Step | Stack | Input | Action | Explanation |
+|------|-------|-------|--------|-------------|
+| 1 | $ | id + id $ | SHIFT | Move "id" to stack |
+| 2 | $ id | + id $ | REDUCE T→id | Replace "id" with T using rule T→id |
+| 3 | $ T | + id $ | REDUCE E→T | Replace "T" with E using rule E→T |
+| 4 | $ E | + id $ | SHIFT | Move "+" to stack |
+| 5 | $ E + | id $ | SHIFT | Move "id" to stack |
+| 6 | $ E + id | $ | REDUCE T→id | Replace "id" with T |
+| 7 | $ E + T | $ | REDUCE E→E+T | Replace "E + T" with E |
+| 8 | $ E | $ | ACCEPT | Done! Input is correct ✅ |
+
+**Important:** The symbol `$` marks the end of input. It helps the parser know when to stop.
+
+**Result:** We successfully built the parse tree from bottom (tokens) to top (start symbol E).
+
+---
+
+#### 3.6.3.2 How Does an LR Parser Work?
+
+An LR parser uses **two important tables** to make decisions:
+
+##### 1. ACTION Table
+This table tells the parser **what to do** at each step.
+- **Input:** (current state, current input token)
+- **Output:** SHIFT, REDUCE, ACCEPT, or ERROR
+
+##### 2. GOTO Table
+This table tells the parser **which state to go to** after a REDUCE.
+- **Input:** (current state, non-terminal symbol)
+- **Output:** next state number
+
+---
+
+##### LR Parsing Algorithm (Step by Step)
+
+Here is how the parser works:
+
+```
+Algorithm: LR Parsing
+
+Step 1: Initialize
+   - Stack starts with: [0]        (state 0 is the starting state)
+   - Input is: your tokens + $     ($ marks the end)
+
+Step 2: Loop (repeat until ACCEPT or ERROR)
+   
+   a) Let s = top state on stack
+   b) Let a = current input token
+   
+   c) Look up ACTION[s, a] in the ACTION table
+   
+   d) If ACTION says "SHIFT to state t":
+       - Push token a onto stack
+       - Push state t onto stack
+       - Move to next input token
+   
+   e) If ACTION says "REDUCE using rule A → β":
+       - Remove 2 × |β| items from stack  
+         (we remove both symbols and states)
+       - Let s' = new top state on stack
+       - Push non-terminal A onto stack
+       - Push GOTO[s', A] onto stack
+   
+   f) If ACTION says "ACCEPT":
+       - Print "Input is valid and correct!"
+       - Stop successfully
+   
+   g) If ACTION says "ERROR":
+       - Print "Syntax Error"
+       - Stop with error
+
+Step 3: End
+```
+
+**Note:** When we REDUCE using rule `A → β`, we pop `2 × |β|` items because each grammar symbol on the stack has a state number with it.
+
+---
+
+##### Three Types of LR Parsers
+
+There are **three main types** of LR parsers. They differ in power and table size:
+
+| Type | Power | Table Size | When to Use |
+|------|-------|------------|-------------|
+| **SLR(1)** | Basic | Small | For learning, simple languages |
+| **LALR(1)** | Medium | Medium | For real compilers (YACC, Bison) |
+| **LR(1)** | Highest | Very Large | For theory and research |
+
+Let's study each one in detail.
+
+---
+
+## 1. SLR(1) Parser (Simple LR)
+
+**Main Idea:** SLR(1) uses **FOLLOW sets** to decide when to reduce.
+
+**SLR** stands for **Simple LR**. It is the easiest LR parser to understand.
+
+### Complete Example
+
+Let's work through a full example from start to finish.
+
+**Grammar:**
+```
+1. S → C C
+2. C → c C
+3. C → d
+```
+
+This grammar generates strings like: `c d`, `c c d`, `d d`, `c c c d d`, etc.
+
+---
+
+**Step 1: Calculate FIRST and FOLLOW Sets**
+
+These are the same FIRST and FOLLOW sets you learned in LL parsing.
+
+```
+FIRST(S) = {c, d}       (S can start with c or d)
+FIRST(C) = {c, d}       (C can start with c or d)
+
+FOLLOW(S) = {$}         (S is the start symbol, so only $ follows it)
+FOLLOW(C) = {c, d, $}   (from rule S → C C, the second C can be followed by c, d, or $)
+```
+
+---
+
+**Step 2: Build LR(0) Items (States)**
+
+An **item** is a production rule with a dot (•) showing how much we have seen so far.
+
+**Example:** `C → c•C` means "we have seen c, and we expect to see C next"
+
+Let's build all the states:
+
+**State I0 (Starting State):**
+```
+S → •C C        (we are at the beginning, expect to see C C)
+C → •c C        (if we see c, we start building C → c C)
+C → •d          (if we see d, we use C → d)
+```
+
+**State I1 (after reading 'c' from I0):**
+```
+C → c•C         (we saw c, now we need C to complete C → c C)
+C → •c C        (to build C, we might see another c)
+C → •d          (or we might see d to build C)
+```
+
+**State I2 (after reading 'd' from I0):**
+```
+C → d•          (we completed C → d, ready to REDUCE)
+```
+
+**State I3 (after reading C from I0):**
+```
+S → C•C         (we saw first C, need second C)
+C → •c C        (second C might start with c)
+C → •d          (or second C might start with d)
+```
+
+**State I4 (after reading C from I1):**
+```
+C → c C•        (we completed C → c C, ready to REDUCE)
+```
+
+**State I5 (after reading C from I3):**
+```
+S → C C•        (we completed S → C C, ready to ACCEPT)
+```
+
+---
+
+**Step 3: Build SLR(1) Parsing Table**
+
+Now we fill the ACTION and GOTO tables using these rules:
+
+**For ACTION[i, a]:**
+- If state i has item `X → α•aβ`, add "SHIFT j" where j is the state after reading a
+- If state i has item `A → α•` (dot at end), add "REDUCE A→α" for all tokens in FOLLOW(A)
+- If state i has item `S → S'•` (start symbol complete), add "ACCEPT" for $
+
+**For GOTO[i, A]:**
+- If we can go from state i to state j by reading non-terminal A, put j in GOTO[i, A]
+
+**Complete SLR(1) Table:**
+
+| State | c | d | $ | C (GOTO) |
+|-------|---|---|---|----------|
+| 0 | s1 | s2 | - | 3 |
+| 1 | s1 | s2 | - | 4 |
+| 2 | r3 | r3 | r3 | - |
+| 3 | s1 | s2 | - | 5 |
+| 4 | r2 | r2 | r2 | - |
+| 5 | - | - | acc | - |
+
+**Legend:**
+- **sN** = SHIFT and go to state N
+- **rN** = REDUCE using grammar rule N
+- **acc** = ACCEPT (success!)
+- **-** = ERROR (syntax error)
+
+**Why does state 2 have r3 for all terminals?**  
+Because FOLLOW(C) = {c, d, $}, so whenever we complete C → d, we reduce no matter what comes next.
+
+---
+
+**Step 4: Parse the String `c d d $`**
+
+Let's trace how the parser processes the input `c d d`:
+
+| Step | Stack | Input | Action | Explanation |
+|------|-------|-------|--------|-------------|
+| 1 | 0 | c d d $ | s1 | ACTION[0,c]=s1, shift c and go to state 1 |
+| 2 | 0 c 1 | d d $ | s2 | ACTION[1,d]=s2, shift d and go to state 2 |
+| 3 | 0 c 1 d 2 | d $ | r3 | ACTION[2,d]=r3, reduce using C→d |
+| 4 | 0 c 1 C 4 | d $ | r2 | ACTION[4,d]=r2, reduce using C→cC |
+| 5 | 0 C 3 | d $ | s2 | ACTION[3,d]=s2, shift d and go to state 2 |
+| 6 | 0 C 3 d 2 | $ | r3 | ACTION[2,$]=r3, reduce using C→d |
+| 7 | 0 C 3 C 5 | $ | acc | ACTION[5,$]=acc, ACCEPT! ✅ |
+
+**Result:** The string `c d d` is **ACCEPTED**! The parser successfully verified it matches our grammar.
+
+---
+
+### Problems with SLR(1)
+
+SLR(1) is simple, but sometimes it creates **conflicts** (situations where the parser doesn't know what to do).
+
+**Example of a problematic grammar:**
+```
+S → a A d
+S → b B d
+A → c
+B → c
+```
+
+Here, both A and B can be followed by 'd' (it's in both FOLLOW sets). So when we see "c" followed by "d", the parser doesn't know whether to reduce using A→c or B→c.
+
+This is called a **reduce-reduce conflict**.
+
+**Solution:** Use more powerful parsers like LALR(1) or LR(1).
+
+---
+
+## 2. LR(1) Parser (Canonical LR)
+
+**Main Idea:** LR(1) tracks the **exact lookahead** for every item, not just FOLLOW sets.
+
+**LR(1)** is more powerful than SLR(1) because it is more precise.
+
+### LR(1) Item Format
+
+In LR(1), each item has **two parts**:
+
+```
+[A → α•β, a]
+```
+
+**Meaning:**
+- `A → α•β` is the production with current position marked by •
+- `a` is the **lookahead token** (what we expect to see after reducing A)
+
+**Example:** `[C → c•C, $]`  
+This means: "We are parsing C → cC, and after we finish reducing to C, we expect to see $"
+
+---
+
+### Complete Example
+
+Let's use the same grammar but with LR(1) precision:
+
+**Grammar:**
+```
+1. S → C C
+2. C → c C
+3. C → d
+```
+
+---
+
+**Building LR(1) States:**
+
+**State I0 (Starting State):**
+```
+[S → •C C, $]           (start symbol, expect $ at end)
+[C → •c C, c]           (first C might be followed by c)
+[C → •c C, d]           (first C might be followed by d)
+[C → •d, c]             (first C might be followed by c)
+[C → •d, d]             (first C might be followed by d)
+```
+
+**State I1 (after reading 'c' from I0):**
+```
+[C → c•C, c]
+[C → c•C, d]
+[C → •c C, c]
+[C → •c C, d]
+[C → •d, c]
+[C → •d, d]
+```
+
+**State I2 (after reading 'd' from I0):**
+```
+[C → d•, c]             (reduce C→d only when next token is c)
+[C → d•, d]             (reduce C→d only when next token is d)
+```
+
+**State I3 (after reading C from I0):**
+```
+[S → C•C, $]            (need second C, final lookahead is $)
+[C → •c C, $]           (second C expects $ after it)
+[C → •d, $]
+```
+
+**State I4 (after reading 'c' from I3):**
+```
+[C → c•C, $]
+[C → •c C, $]
+[C → •d, $]
+```
+
+**State I5 (after reading 'd' from I3):**
+```
+[C → d•, $]             (reduce C→d only when next token is $)
+```
+
+**State I6 (after reading C from I1):**
+```
+[C → c C•, c]           (reduce C→cC when next is c)
+[C → c C•, d]           (reduce C→cC when next is d)
+```
+
+**State I7 (after reading C from I3):**
+```
+[S → C C•, $]           (accept when next is $)
+```
+
+**State I8 (after reading C from I4):**
+```
+[C → c C•, $]           (reduce C→cC when next is $)
+```
+
+---
+
+**Key Observation:**  
+Notice that state I2 and state I5 both have the item `C → d•`, but with **different lookaheads**:
+- State I2: reduce when next token is c or d
+- State I5: reduce when next token is $
+
+This precision helps avoid conflicts!
+
+---
+
+**LR(1) Parsing Table:**
+
+| State | c | d | $ | C (GOTO) |
+|-------|---|---|---|----------|
+| 0 | s1 | s2 | - | 3 |
+| 1 | s1 | s2 | - | 6 |
+| 2 | r3 | r3 | - | - |
+| 3 | s4 | s5 | - | 7 |
+| 4 | s4 | s5 | - | 8 |
+| 5 | - | - | r3 | - |
+| 6 | r2 | r2 | - | - |
+| 7 | - | - | acc | - |
+| 8 | - | - | r2 | - |
+
+---
+
+**Advantages of LR(1):**
+- More states, but **no conflicts**
+- More accurate than SLR(1)
+- Can parse more grammars
+
+**Disadvantage:**
+- Tables can become **very large** for complex grammars
+- Takes more memory
+
+---
+
+## 3. LALR(1) Parser (Lookahead LR)
+
+**Main Idea:** LALR(1) **merges** LR(1) states that have the same core items.
+
+**LALR** stands for **Lookahead LR**. It is a compromise between SLR(1) and LR(1).
+
+### How LALR(1) Works
+
+1. First, build the complete LR(1) automaton (all states)
+2. Find states that have the **same core** (same items, ignoring lookaheads)
+3. **Merge** those states together
+4. **Combine** their lookahead sets
+
+### Example
+
+In our previous LR(1) example:
+- State I1 has core items: `{C → c•C, C → •c C, C → •d}` with lookaheads {c, d}
+- State I4 has the **same core items** but with lookahead {$}
+- **LALR(1) merges them** into one state with combined lookaheads: {c, d, $}
+
+---
+
+**Result:**
+- **Fewer states** than LR(1) (smaller tables)
+- **More power** than SLR(1) (fewer conflicts)
+- **Perfect balance** for real compilers
+
+---
+
+**LALR(1) Table for our grammar:**
+
+For this particular grammar, the LALR(1) table looks similar to SLR(1):
+
+| State | c | d | $ | C (GOTO) |
+|-------|---|---|---|----------|
+| 0 | s1 | s2 | - | 3 |
+| 1 | s1 | s2 | - | 4 |
+| 2 | r3 | r3 | r3 | - |
+| 3 | s1 | s2 | - | 5 |
+| 4 | r2 | r2 | r2 | - |
+| 5 | - | - | acc | - |
+
+**Used in:** YACC (Yet Another Compiler Compiler) and Bison (GNU parser generator) - these are real tools used to build compilers!
+
+---
+
+## Summary and Comparison
+
+### Quick Comparison Table
+
+```
+Characteristic    SLR(1)        LALR(1)       LR(1)
+─────────────────────────────────────────────────────
+Parsing Power     Basic         Good          Best
+Table Size        Small         Medium        Large
+Conflicts         More          Fewer         Fewest
+Real-World Use    Learning      Production    Theory
+Examples          Study         YACC, Bison   Research
+```
+
+---
+
+### When to Use Each Parser
+
+**Use SLR(1) when:**
+- You are learning about compilers
+- Your grammar is simple
+- You are working on a small project
+- Table size is very important
+
+**Use LALR(1) when:**
+- You are building a real compiler
+- You want to use tools like YACC or Bison
+- You need the best balance of power and efficiency
+- This is the **most common choice** in practice
+
+**Use LR(1) when:**
+- Your grammar has complex conflicts that LALR(1) cannot handle
+- You are doing research or theoretical work
+- Table size is not a concern
+- You need maximum parsing power
+
+---
+
+### Key Differences in Detail
+
+| Feature | SLR(1) | LALR(1) | LR(1) |
+|---------|--------|---------|-------|
+| Uses FOLLOW sets | Yes | No | No |
+| Tracks exact lookahead | No | Yes | Yes |
+| Number of states | Fewest | Medium | Most |
+| Merge states | No | Yes | No |
+| Reduce-reduce conflicts | More likely | Less likely | Least likely |
+| Memory usage | Low | Medium | High |
+
+---
+
+## Important Points to Remember
+
+1. **LR parsing is bottom-up** — it builds the parse tree from leaves (tokens) up to the root (start symbol)
+
+2. **Four operations** — Every LR parser uses: SHIFT, REDUCE, ACCEPT, ERROR
+
+3. **SLR(1)** uses FOLLOW sets to decide when to reduce. Simple but may have conflicts.
+
+4. **LR(1)** tracks exact lookahead for each item. Powerful but creates large tables.
+
+5. **LALR(1)** merges LR(1) states with same core. Best choice for real compilers.
+
+6. **Real compilers use LALR(1)** — Tools like YACC and Bison generate LALR(1) parsers.
+
+7. **Stack is crucial** — The parser stack holds both states and symbols.
+
+8. **Tables guide decisions** — ACTION table says what to do, GOTO table says where to go.
+
+---
+
+## Practice Exercise
+
+Try this yourself to test your understanding!
+
+**Given Grammar:**
+```
+E → E + T | T
+T → id
+```
+
+**Task:** Parse the input `id + id` using shift-reduce operations. Fill in the table.
+
+**Answer:**
+
+| Step | Stack | Input | Action | Rule Used |
+|------|-------|-------|--------|-----------|
+| 1 | $ | id + id $ | SHIFT id | - |
+| 2 | $ id | + id $ | REDUCE | T → id |
+| 3 | $ T | + id $ | REDUCE | E → T |
+| 4 | $ E | + id $ | SHIFT + | - |
+| 5 | $ E + | id $ | SHIFT id | - |
+| 6 | $ E + id | $ | REDUCE | T → id |
+| 7 | $ E + T | $ | REDUCE | E → E + T |
+| 8 | $ E | $ | ACCEPT | Success! ✅ |
+
+**Congratulations!** You have successfully parsed `id + id` and built the parse tree from bottom to top.
+
+---
+
+## Tips for Algerian Students
+
+1. **Practice with simple examples first** — Don't jump to complex grammars immediately
+
+2. **Draw the parse tree** — Visualizing helps you understand bottom-up construction
+
+3. **Memorize the four operations** — SHIFT, REDUCE, ACCEPT, ERROR
+
+4. **Focus on LALR(1)** — This is what you'll use in practice and exams
+
+5. **Use YACC or Bison** — Try practical tools to see LR parsing in action
+
+6. **Compare with LL parsing** — Understanding both methods helps you choose the right one
+
+7. **Work in groups** — Discuss examples with your classmates
+
+**Good luck with your studies! 📚**
