@@ -730,7 +730,7 @@ LL(1) parsers use a parsing **table** and a **stack**. The parsing table has row
 2. If `ε` is in `FIRST(α)`, then for each terminal `t` in `FOLLOW(A)`, put `A → ε` in the table cell at row `A` and column `t`.
 
 
-**Grammar (short, but with some FIRST & FOLLOW):**
+**Example:**
 
 ```
 S → A B
