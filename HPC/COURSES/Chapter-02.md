@@ -129,7 +129,6 @@ Why choose one when you can use both? Hybrid Parallelism combines Task and Data 
 
 **When is it useful?** This approach is essential for large-scale applications running on supercomputers or distributed clusters, such as complex scientific simulations, climate modeling, and training very large neural networks.
 
----
 
 ### **2. Communicating Between Computers: The Message Passing Interface (MPI)**
 
@@ -160,10 +159,53 @@ Why choose one when you can use both? Hybrid Parallelism combines Task and Data 
 
 **Point-to-Point Communication: A Direct Conversation**
 
+
 This is like making a phone call from one process to another.
 
 *   `MPI_Send`: One process packages data and sends it to a specific destination rank.
 *   `MPI_Recv`: Another process waits to receive a package from a specific source rank.
+
+**Example: Basic Send and Receive in C**
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);  // Start MPI environment
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size < 2) {
+        printf("Run with at least 2 processes!\n");
+        MPI_Finalize();
+        return 0;
+    }
+
+    if (rank == 0) {
+        int data = 42;
+        MPI_Send(&data, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+        printf("Process 0 sent data: %d\n", data);
+    } else if (rank == 1) {
+        int received;
+        MPI_Recv(&received, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Process 1 received data: %d\n", received);
+    }
+
+    MPI_Finalize();  // End MPI environment
+    return 0;
+}
+```
+
+**Output:**
+
+```
+Process 0 sent data: 42
+Process 1 received data: 42
+```
+This simple program shows two processes exchanging data directly.
 
 **Blocking Explained:** A standard `MPI_Send` will *block*—meaning the process will pause and wait—until the message is safely on its way. `MPI_Recv` will block until the message it's waiting for arrives. This is crucial for making sure data is sent and received correctly.
 

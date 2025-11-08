@@ -81,23 +81,14 @@ int main(int argc, char** argv) {
 }
 ```
 
-**How to Run:**
-
-```
-mpicc mpi_sendrecv.c -o mpi_sendrecv
-mpirun -np 2 ./mpi_sendrecv
-```
-
-**Expected Output:**
+**Output:**
 
 ```
 Process 0 sent data: 42
 Process 1 received data: 42
 ```
-
 This simple program shows two processes exchanging data directly.
 
----
 
 #### **Collective Communication: Group Operations**
 

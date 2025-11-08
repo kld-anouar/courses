@@ -695,7 +695,7 @@ T' → *FT' | ε
 
 **Pseudo-code in C style:**
 
-```c
+```C
 void E() {
     T();         // parse T
     E_prime();   // parse E'
