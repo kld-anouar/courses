@@ -175,12 +175,12 @@ int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);  // Start MPI environment
 
     int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank); // get process rank
+    MPI_Comm_size(MPI_COMM_WORLD, &size); // get processes count
 
     if (size < 2) {
         printf("Run with at least 2 processes!\n");
-        MPI_Finalize();
+        MPI_Finalize(); // exit
         return 0;
     }
 
@@ -207,6 +207,58 @@ Process 1 received data: 42
 ```
 This simple program shows two processes exchanging data directly.
 
+
+**Example: Parallel Sum of an Array (Data Parallelism)**
+
+Data parallelism using `MPI_Scatter` and `MPI_Reduce`.
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int N = 16;
+    int *data = NULL;
+    int chunk = N / size;
+    int *local = (int*)malloc(chunk * sizeof(int));
+
+    if (rank == 0) {
+        data = (int*)malloc(N * sizeof(int));
+        for (int i = 0; i < N; i++) data[i] = i + 1;  // Fill with 1..N
+    }
+
+    MPI_Scatter(data, chunk, MPI_INT, local, chunk, MPI_INT, 0, MPI_COMM_WORLD);
+
+    int local_sum = 0;
+    for (int i = 0; i < chunk; i++) local_sum += local[i];
+
+    int global_sum = 0;
+    MPI_Reduce(&local_sum, &global_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0) {
+        printf("Global sum = %d\n", global_sum);
+    }
+
+    free(local);
+    if (rank == 0) free(data);
+    MPI_Finalize();
+    return 0;
+}
+```
+
+**Expected Output:**
+
+```
+Global sum = 136
+```
+
 **Blocking Explained:** A standard `MPI_Send` will *block*—meaning the process will pause and wait—until the message is safely on its way. `MPI_Recv` will block until the message it's waiting for arrives. This is crucial for making sure data is sent and received correctly.
 
 **Collective Communication: A Team Meeting**
@@ -214,14 +266,64 @@ This simple program shows two processes exchanging data directly.
 These functions involve every process in the communicator participating at once.
 
 *   `MPI_Bcast` **(Broadcast):** The "memo." One process has a piece of data, and it sends a copy to everyone else.
-*   `MPI_Reduce` **(Reduce):** The "vote." Every process has a value (e.g., its piece of a calculation). `MPI_Reduce` gathers all these values and combines them using an operation like `MPI_SUM` or `MPI_MAX`, delivering the final result to a single process (usually rank 0).
-*   `MPI_Allreduce` **(Allreduce):** Same as Reduce, but it sends the final combined result back to *every* process.
+
+
+**Example: Broadcasting a Value**
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int value;
+    if (rank == 0) {
+        value = 100;
+        printf("Process 0 broadcasting value %d\n", value);
+    }
+
+    MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    printf("Process %d received broadcast value %d\n", rank, value);
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+**Output (4 processes):**
+
+```
+Process 0 broadcasting value 100
+Process 1 received broadcast value 100
+Process 2 received broadcast value 100
+Process 3 received broadcast value 100
+```
+
+This demonstrates how MPI synchronizes data across all processes.
+
 
 #### **2.3 Common Pitfalls: Deadlock**
 
 A major challenge in message passing is **deadlock**. This happens when two or more processes are stuck waiting for each other in a circular chain.
 
-**Real-World Analogy:** Imagine two people on a narrow staircase. Person A is going up and won't move until Person B, who is coming down, gets out of the way. But Person B won't move until Person A gets out of the way. They are both blocked, waiting for a resource the other one holds. Neither can proceed. In programming, this happens when Process 0 sends a message to Process 1 and then waits for a reply, while Process 1 sends a message to Process 0 and then waits for its own reply. They will wait forever.
+**Example of Deadlock:**
+
+```c
+// Both processes try to send before receiving – will hang!
+if (rank == 0) {
+    MPI_Send(&data, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+    MPI_Recv(&data, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+} else if (rank == 1) {
+    MPI_Send(&data, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Recv(&data, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+}
+```
+
+Both processes call `MPI_Send` and wait for the other to receive. Neither reaches the `MPI_Recv`, so both block forever.
 
 **Advantages of MPI:**
 *   Can scale to thousands of computers.
@@ -232,7 +334,7 @@ A major challenge in message passing is **deadlock**. This happens when two or m
 *   Requires you to manually manage all communication, which can be complex.
 *   Deadlocks and other bugs are easy to create and hard to find.
 
----
+
 
 ### **3. Cooperating on One Computer: OpenMP**
 
@@ -354,11 +456,3 @@ This hybrid model reduces the number of MPI messages that need to fly across the
 
 **Example on a 4-node cluster (each with 8 cores):**
 You would run 4 MPI processes (one per node). Each of those 4 processes would then create 8 OpenMP threads to take full advantage of the cores on its node.
-
-### **Key Takeaways for This Chapter**
-
-1.  **First, think about the Strategy:** Is your problem better suited for a task-based (assembly line) or data-based (strength in numbers) approach?
-2.  **Let the Hardware Guide You:** Your computer's architecture is the biggest factor. Distributed memory (clusters) requires MPI. Shared memory (a single multi-core machine) lets you use OpenMP or PThreads.
-3.  **Start Simple:** OpenMP is the easiest way to get a speedup on a multi-core machine.
-4.  **Master Communication:** For large-scale problems, MPI is essential, but you must be careful to avoid deadlocks.
-5.  **Combine for Power:** Hybrid MPI + OpenMP is the standard for high-performance computing today.
