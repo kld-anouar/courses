@@ -198,6 +198,11 @@ int main(int argc, char** argv) {
     return 0;
 }
 ```
+**Compile and Run:**
+```
+mpicc mpi_sendrecv.c -o mpi_sendrecv
+mpirun --oversubscribe -np 2 ./mpi_sendrecv
+```
 
 **Output:**
 
