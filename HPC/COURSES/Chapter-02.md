@@ -199,13 +199,6 @@ int main(int argc, char** argv) {
 }
 ```
 
-**Compile and Run:**
-
-```
-mpicc mpi_sendrecv.c -o mpi_sendrecv
-mpirun --oversubscribe -np 2 ./mpi_sendrecv
-```
-
 **Output:**
 
 ```
@@ -214,6 +207,50 @@ Process 1 received data: 42
 ```
 This simple program shows two processes exchanging data directly.
 
+
+**Collective Communication: A Team Meeting**
+
+These functions involve every process in the communicator participating at once.
+
+*   `MPI_Bcast` **(Broadcast):** The "memo." One process has a piece of data, and it sends a copy to everyone else.
+
+
+**Example: Broadcasting a Value**
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    MPI_Init(&argc, &argv);
+
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int value;
+    if (rank == 0) {
+        value = 100;
+        printf("Process 0 broadcasting value %d\n", value);
+    }
+
+    MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    printf("Process %d received broadcast value %d\n", rank, value);
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+**Output (4 processes):**
+
+```
+Process 0 broadcasting value 100
+Process 1 received broadcast value 100
+Process 2 received broadcast value 100
+Process 3 received broadcast value 100
+```
+
+This demonstrates how MPI synchronizes data across all processes.
 
 **Example: Parallel Sum of an Array (Data Parallelism)**
 
@@ -268,49 +305,6 @@ Global sum = 136
 
 **Blocking Explained:** A standard `MPI_Send` will *block*—meaning the process will pause and wait—until the message is safely on its way. `MPI_Recv` will block until the message it's waiting for arrives. This is crucial for making sure data is sent and received correctly.
 
-**Collective Communication: A Team Meeting**
-
-These functions involve every process in the communicator participating at once.
-
-*   `MPI_Bcast` **(Broadcast):** The "memo." One process has a piece of data, and it sends a copy to everyone else.
-
-
-**Example: Broadcasting a Value**
-
-```c
-#include <mpi.h>
-#include <stdio.h>
-
-int main(int argc, char** argv) {
-    MPI_Init(&argc, &argv);
-
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    int value;
-    if (rank == 0) {
-        value = 100;
-        printf("Process 0 broadcasting value %d\n", value);
-    }
-
-    MPI_Bcast(&value, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    printf("Process %d received broadcast value %d\n", rank, value);
-
-    MPI_Finalize();
-    return 0;
-}
-```
-
-**Output (4 processes):**
-
-```
-Process 0 broadcasting value 100
-Process 1 received broadcast value 100
-Process 2 received broadcast value 100
-Process 3 received broadcast value 100
-```
-
-This demonstrates how MPI synchronizes data across all processes.
 
 
 #### **2.3 Common Pitfalls: Deadlock**
@@ -345,227 +339,55 @@ Both processes call `MPI_Send` and wait for the other to receive. Neither reache
 
 ### **3. Cooperating on One Computer: OpenMP**
 
-- Multi-core processors share the same memory within a single computer (shared memory system).
-- OpenMP helps easily parallelize code in such environments.
-- It uses pragmas (special comments) added to the code.
-- These pragmas tell the compiler which code sections should run in parallel.
+For a multi-core processor inside a single computer (**shared memory** system), all cores can access the same memory. OpenMP makes it easy to parallelize code in this environment. You simply add special comments, called **pragmas**, to your code to tell the compiler which parts to run in parallel.
 
 #### **3.1 Core OpenMP Concepts**
 
--   **Thread:** A single path of execution. A multi-core CPU can run multiple threads at once.
--   **Fork-Join Model:**  The program starts as one main thread, forks into worker threads for parallel sections, then joins back to continue.
+*   **Thread:** A single path of execution. A multi-core CPU can run multiple threads at once. All threads in an OpenMP program share the same memory.
+*   **Fork-Join Model:** Your program starts as a single main thread. When it hits a parallel section (marked by a pragma), it "forks," creating a team of worker threads. These threads run the code in parallel. When they're done, they "join" back, and the main thread continues alone.
 
 **Visual Model: The Fork-Join Lifecycle**
 ```
-      Main Thread (Sequential)
-               │
-     #pragma omp parallel (FORK)
-               │
-   ┌────┬────┬─┴──┬────┬────┬
+        Main Thread (Sequential)
+             │
+        #pragma omp parallel (FORK)
+             │
+   ┌────┬────┼────┬────┬────┐
    │    │    │    │    │    │
-   │ T0 │ T1 │ T2 │ T3 │ T4 │.. ← Team of threads in parallel
+  [T0] [T1] [T2] [T3] [T4] ← Team of threads working in parallel
    │    │    │    │    │    │
-   └────┴────┴─┬──┴────┴────┴
-               │
-             (JOIN)
-               │
+   └────┴────┼────┴────┴────┘
+             │
+        (JOIN)
+             │
         Main Thread (Sequential again)
 ```
 
-**Example: Simple OpenMP**
+#### **3.2 Key OpenMP Tools**
+
+**Parallel Loops:** The most common use of OpenMP is to split up the work of a `for` loop.
+
 ```c
-#include <omp.h>
-#include <stdio.h>
-
-int main() {
-  #pragma omp parallel
-  {
-    int tid = omp_get_thread_num();
-    int n   = omp_get_num_threads();
-    printf("Hello from thread %d of %d\n", tid, n);
-  }
-  return 0;
-}
-```
-
-**Expected Output (order may vary):**
-```
-Hello from thread 0 of 4
-Hello from thread 1 of 4
-Hello from thread 2 of 4
-Hello from thread 3 of 4
-```
-
-#### 3.2 Worksharing: Parallel Loops & Blocks
-
-**Parallel Loops**
-
-The most common use of OpenMP is to split up the work of a `for` loop.
-
-```c     
+// Add this one line!
 #pragma omp parallel for
 for (int i = 0; i < 1000; i++) {
     // Each thread will automatically get a different set of 'i' values
-    // eg. 3 threads: t1 -> [0-333], t2 -> [334-666], t3 -> [667-999]
     // and run this code at the same time.
 }
 ```
-* **Scheduling** controls *which* iterations go to *which* thread:
 
-  * `schedule(static[,chunk])` – pre-chunked, low overhead (best for uniform work).
-  * `schedule(dynamic[,chunk])` – threads pull work as they finish (better for uneven work).
-  * `schedule(guided[,chunk])` – decreasing chunk sizes over time (load balancing with less overhead).
+**Data Sharing Clauses:** Since all threads share memory, you must be careful about which variables they can access.
 
-**Example: SAXPY (y = a*x + y)**
+*   `shared(var)`: All threads see and can modify the *exact same* variable in memory. This is the default.
+*   `private(var)`: Each thread gets its *very own* private copy of the variable. Changes it makes are not seen by other threads.
+*   `reduction(+:sum)`: This is for situations where you need to safely combine values from all threads, like adding to a total `sum`. Each thread works on a private copy, and at the end, OpenMP safely combines them all with the specified operation (+, \*, etc.).
 
-```c
-#pragma omp parallel for schedule(static)
-for (int i = 0; i < n; ++i)
-  y[i] = a * x[i] + y[i];
-```
+**Synchronization: Preventing Chaos**
 
-#### 3.3 Different independent blocks in parallel
-Use `sections` when you have separate blocks of work that can run at the same time — not loop iterations, but different functions or tasks.
+When multiple threads try to change the same variable at the same time, it can lead to a **race condition**, where the final result is wrong because it depends on the unpredictable order in which threads run.
 
-```c
-#pragma omp parallel sections
-{
-  #pragma omp section
-  { render_video(); }        // one task (e.g., read/write data)
-
-  #pragma omp section
-  { play_music(); }   // another independent task (e.g., calculations)
-}
-```
-How it works:
-- The parallel sections block creates a team of threads.
-- Each section is assigned to a different thread (if available).
-- All sections run concurrently.
-- When all sections finish, threads synchronize before continuing.
-
-#### 3.3 `single` & `master`: one thread executes a block
-Sometimes, we want **only one thread** to execute a certain part of the code —  for example, printing, loading data once, or doing setup work.
-
-- **`single`** – The block is executed by **only one arbitrary thread**, while others skip it.  
-  - Has an **implicit barrier** at the end (threads wait), unless you add `nowait` to skip that waiting.
-
-- **`master`** – The block is executed **only by thread 0**.  
-  - **No implicit barrier**, so other threads continue immediately.
-
-
-**Example:**
-
-```c
-#include <omp.h>
-#include <stdio.h>
-
-int main() {
-  #pragma omp parallel
-  {
-    int tid = omp_get_thread_num();
-
-    // executed by one arbitrary thread
-    #pragma omp single
-    {
-      printf("Thread %d: loading data (single)\n", tid);
-    }
-
-    // code executed by all threads 
-    printf("Thread %d: working...\n", tid);
-
-    // executed only by master thread (thread 0)
-    #pragma omp master
-    {
-      printf("Thread %d: saving results (master)\n", tid);
-    }
-  }
-  return 0;
-}
-```
-
-#### 3.4 Data Scoping & Reductions
-
-When OpenMP runs code in parallel, it must know which variables are **shared** between threads and which are **private** to each one.
-
-* **`shared(var)`** – All threads see and can modify the *same* variable in memory. This is the default behavior for global or static variables.
-
-  * Example: Shared counters, arrays, or data structures accessed by all threads.
-
-* **`private(var)`** – Each thread gets its *own independent copy* of the variable. Changes made by one thread are *not visible* to others.
-
-  * Example: Loop indices or temporary variables that each thread should handle separately.
-
-* **`reduction(+:sum)`** – Used when you need to *safely combine results* from all threads using an operation like `+`, `*`, `min`, or `max`.
-
-  * Each thread keeps a private version of the variable (e.g., `sum`), and OpenMP automatically merges all results at the end using the specified operator.
-
-
-**Example: Factorial of N**
-```c
-#include <omp.h>
-#include <stdio.h>
-
-int main() {
-  const int N = 6;       // compute factorial of 10
-  long long factorial = 1;
-
-  #pragma omp parallel for default(none) shared(N) reduction(*:factorial)
-  for (int i = 1; i <= N; ++i)
-    factorial *= i;
-
-  printf("%d! = %lld\n", N, factorial);
-  return 0;
-}
-```
-
-Each thread calculates its own range of values, and then all partial results are combined using the multiplication (*) operation into the final result of the sequential program.
-
-
-### 3.5 Synchronization: Avoiding Races & Ordering Issues
-
-When multiple threads work on shared data, they can **interfere** with each other — this is called a **race condition**.  
-OpenMP provides several tools to synchronize threads and ensure correct, predictable results.
-
-
-#### 🔹 Common Synchronization Constructs
-
-| Directive | Purpose | Example Use |
-|------------|----------|-------------|
-| `#pragma omp critical` | Only one thread at a time executes the block (a general lock). | Updating a shared counter or array. |
-| `#pragma omp atomic` | A lightweight version for a single variable update (e.g. `x++`, `sum += v`). | Safe increments without full locking. |
-| `#pragma omp barrier` | All threads must reach this point before continuing. | Wait for all threads to finish a phase. |
-| `#pragma omp ordered` | Forces iterations to follow the original order. | Print results in loop order. |
-
-
-### Example: Safe Counter Update
-
-```c
-#include <omp.h>
-#include <stdio.h>
-
-int main() {
-  const int N = 1000000;
-  long long count = 0;
-
-  // Multiple threads increment a shared counter
-  #pragma omp parallel for
-  for (int i = 0; i < N; ++i)
-    count++;   // race condition here
-
-  printf("Incorrect count = %lld\n", count);
-
-  count = 0; // reset
-
-  // FIX: atomic ensures only one thread updates at a time
-  #pragma omp parallel for
-  for (int i = 0; i < N; ++i)
-    #pragma omp atomic
-    count++;
-
-  printf("Correct count = %lld\n", count);
-  return 0;
-}
-```
+*   `#pragma omp critical`: Creates a block of code that only **one thread can enter at a time**. This is like putting a lock on a room to prevent accidents but can slow things down.
+*   `#pragma omp atomic`: A much faster way to protect a single, simple operation, like `sum++` or `x = x + 5`.
 
 **Advantages of OpenMP:**
 *   Very easy to start with; you can parallelize existing code incrementally.
