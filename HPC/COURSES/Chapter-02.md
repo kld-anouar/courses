@@ -199,9 +199,11 @@ int main(int argc, char** argv) {
 }
 ```
 
+**Compile and Run:**
+
 ```c
-mpicc mpi_sendrecv.c -o mpi_sendrecv // Compile
-mpirun --oversubscribe -np 2 ./mpi_sendrecv // Run 2 processes
+mpicc mpi_sendrecv.c -o mpi_sendrecv
+mpirun --oversubscribe -np 2 ./mpi_sendrecv
 ```
 
 **Output:**
