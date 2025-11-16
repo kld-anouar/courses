@@ -1036,7 +1036,6 @@ There are **three main types** of LR parsers. They differ in power and table siz
 
 Let's study each one in detail.
 
-
 ## 1. SLR(1) Parser (Simple LR)
 
 **Main Idea:** SLR(1) uses **FOLLOW sets** to decide when to reduce.
@@ -1047,128 +1046,127 @@ Let's study each one in detail.
 
 Let's work through a full example from start to finish.
 
-**Grammar:**
+**Grammar (Augmented):**
+
 ```
-1. S → C C
-2. C → c C
-3. C → d
+0. S' → S
+1. S  → C C
+2. C  → c C
+3. C  → d
 ```
 
 This grammar generates strings like: `c d`, `c c d`, `d d`, `c c c d d`, etc.
 
----
 
-**Step 1: Calculate FIRST and FOLLOW Sets**
-
-These are the same FIRST and FOLLOW sets you learned in LL parsing.
+## Step 1: FIRST and FOLLOW Sets
 
 ```
-FIRST(S) = {c, d}       (S can start with c or d)
-FIRST(C) = {c, d}       (C can start with c or d)
+FIRST(S) = {c, d}
+FIRST(C) = {c, d}
 
-FOLLOW(S) = {$}         (S is the start symbol, so only $ follows it)
-FOLLOW(C) = {c, d, $}   (from rule S → C C, the second C can be followed by c, d, or $)
+FOLLOW(S) = {$}
+FOLLOW(C) = {c, d, $}
 ```
 
----
-
-**Step 2: Build LR(0) Items (States)**
-
+## Step 2: Build LR(0) Items (States)
 An **item** is a production rule with a dot (•) showing how much we have seen so far.
 
 **Example:** `C → c•C` means "we have seen c, and we expect to see C next"
 
-Let's build all the states:
 
-**State I0 (Starting State):**
-```
-S → •C C        (we are at the beginning, expect to see C C)
-C → •c C        (if we see c, we start building C → c C)
-C → •d          (if we see d, we use C → d)
-```
+### I₀ (Start State)
 
-**State I1 (after reading 'c' from I0):**
 ```
-C → c•C         (we saw c, now we need C to complete C → c C)
-C → •c C        (to build C, we might see another c)
-C → •d          (or we might see d to build C)
+S' → •S
+S  → •C C
+C → •c C
+C → •d
 ```
 
-**State I2 (after reading 'd' from I0):**
-```
-C → d•          (we completed C → d, ready to REDUCE)
-```
+### I₁ = GOTO(I₀, C)
 
-**State I3 (after reading C from I0):**
 ```
-S → C•C         (we saw first C, need second C)
-C → •c C        (second C might start with c)
-C → •d          (or second C might start with d)
+S  → C•C
+C → •c C
+C → •d
 ```
 
-**State I4 (after reading C from I1):**
-```
-C → c C•        (we completed C → c C, ready to REDUCE)
-```
+### I₂ = GOTO(I₀, c)
 
-**State I5 (after reading C from I3):**
 ```
-S → C C•        (we completed S → C C, ready to ACCEPT)
+C → c•C
+C → •c C
+C → •d
 ```
 
----
+### I₃ = GOTO(I₀, d)
 
-**Step 3: Build SLR(1) Parsing Table**
+```
+C → d•
+```
 
-Now we fill the ACTION and GOTO tables using these rules:
+### I₄ = GOTO(I₁, C)
 
-**For ACTION[i, a]:**
-- If state i has item `X → α•aβ`, add "SHIFT j" where j is the state after reading a
-- If state i has item `A → α•` (dot at end), add "REDUCE A→α" for all tokens in FOLLOW(A)
-- If state i has item `S → S'•` (start symbol complete), add "ACCEPT" for $
+```
+C → c C•
+```
 
-**For GOTO[i, A]:**
-- If we can go from state i to state j by reading non-terminal A, put j in GOTO[i, A]
+### I₅ = GOTO(I₃, C)
 
-**Complete SLR(1) Table:**
+```
+S  → C C•
+```
 
-| State | c | d | $ | C (GOTO) |
-|-------|---|---|---|----------|
-| 0 | s1 | s2 | - | 3 |
-| 1 | s1 | s2 | - | 4 |
-| 2 | r3 | r3 | r3 | - |
-| 3 | s1 | s2 | - | 5 |
-| 4 | r2 | r2 | r2 | - |
-| 5 | - | - | acc | - |
+### I₆ = GOTO(I₀, S)
+
+```
+S' → S•
+```
+
+
+## Step 3: Build Complete SLR(1) Table
+
+| State | c  | d  | $   | S | C |
+| ----- | -- | -- | --- | - | - |
+| 0     | s2 | s3 | -   | 6 | 1 |
+| 1     | s2 | s3 | -   | - | 4 |
+| 2     | s2 | s3 | -   | - | 4 |
+| 3     | r3 | r3 | r3  | - | - |
+| 4     | r2 | r2 | r2  | - | - |
+| 5     | -  | -  | r1  | - | - |
+| 6     | -  | -  | acc | - | - |
 
 **Legend:**
-- **sN** = SHIFT and go to state N
-- **rN** = REDUCE using grammar rule N
-- **acc** = ACCEPT (success!)
-- **-** = ERROR (syntax error)
 
-**Why does state 2 have r3 for all terminals?**  
-Because FOLLOW(C) = {c, d, $}, so whenever we complete C → d, we reduce no matter what comes next.
+* **sN** = SHIFT and go to state N
+* **rN** = REDUCE using rule N
+* **acc** = ACCEPT
+* **-** = ERROR
 
----
+**Notes:**
 
-**Step 4: Parse the String `c d d $`**
+* GOTO(S) is now included (0 → 6), showing the parser goes to the accepting state when S is completed.
+* State 3 reduces `C → d` for all FOLLOW(C) terminals.
+* State 4 reduces `C → c C` for all FOLLOW(C) terminals.
+* State 5 reduces `S → C C` for all FOLLOW(S) terminals ($).
+* State 6 is the ACCEPT state, containing `S' → S•`.
 
-Let's trace how the parser processes the input `c d d`:
 
-| Step | Stack | Input | Action | Explanation |
-|------|-------|-------|--------|-------------|
-| 1 | 0 | c d d $ | s1 | ACTION[0,c]=s1, shift c and go to state 1 |
-| 2 | 0 c 1 | d d $ | s2 | ACTION[1,d]=s2, shift d and go to state 2 |
-| 3 | 0 c 1 d 2 | d $ | r3 | ACTION[2,d]=r3, reduce using C→d |
-| 4 | 0 c 1 C 4 | d $ | r2 | ACTION[4,d]=r2, reduce using C→cC |
-| 5 | 0 C 3 | d $ | s2 | ACTION[3,d]=s2, shift d and go to state 2 |
-| 6 | 0 C 3 d 2 | $ | r3 | ACTION[2,$]=r3, reduce using C→d |
-| 7 | 0 C 3 C 5 | $ | acc | ACTION[5,$]=acc, ACCEPT!  |
+## Step 4: Parse the String `c d d $`
 
-**Result:** The string `c d d` is **ACCEPTED**! The parser successfully verified it matches our grammar.
+| Step | Stack     | Input   | Action  | Explanation                        |
+| ---- | --------- | ------- | ------- | ---------------------------------- |
+| 1    | 0         | c d d $ | **s2**  | Shift c and go to state 2          |
+| 2    | 0 c 2     | d d $   | **s3**  | Shift d and go to state 3          |
+| 3    | 0 c 2 d 3 | d $     | **r3**  | Reduce using `C → d`               |
+| 4    | 0 c 2 C 4 | d $     | **r2**  | Reduce using `C → c C`             |
+| 5    | 0 C 1     | d $     | **s3**  | Shift d and go to state 3          |
+| 6    | 0 C 1 d 3 | $       | **r3**  | Reduce using `C → d`               |
+| 7    | 0 C 1 C 4 | $       | **r1**  | Reduce using `S → C C`; goto S → 6 |
+| 8    | 0 S 6     | $       | **acc** | Accept                             |
 
----
+**Result:** The string `c d d` is **ACCEPTED**.
+
 
 ### Problems with SLR(1)
 
