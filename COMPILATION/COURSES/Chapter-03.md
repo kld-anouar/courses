@@ -1469,21 +1469,3 @@ T → id
 **Congratulations!** You have successfully parsed `id + id` and built the parse tree from bottom to top.
 
 ---
-
-## Tips for Algerian Students
-
-1. **Practice with simple examples first** — Don't jump to complex grammars immediately
-
-2. **Draw the parse tree** — Visualizing helps you understand bottom-up construction
-
-3. **Memorize the four operations** — SHIFT, REDUCE, ACCEPT, ERROR
-
-4. **Focus on LALR(1)** — This is what you'll use in practice and exams
-
-5. **Use YACC or Bison** — Try practical tools to see LR parsing in action
-
-6. **Compare with LL parsing** — Understanding both methods helps you choose the right one
-
-7. **Work in groups** — Discuss examples with your classmates
-
-**Good luck with your studies! 📚**
