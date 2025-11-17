@@ -462,3 +462,9 @@ This hybrid model reduces the number of MPI messages that need to fly across the
 
 **Example on a 4-node cluster (each with 8 cores):**
 You would run 4 MPI processes (one per node). Each of those 4 processes would then create 8 OpenMP threads to take full advantage of the cores on its node.
+
+</br>
+</br>
+</br>
+</br>
+</br>

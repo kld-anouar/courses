@@ -403,3 +403,9 @@ int main(int argc, char** argv) {
 ---
 
 These examples make the MPI section much more engaging and give students the ability to *see* and *measure* parallel execution in action.
+
+</br>
+</br>
+</br>
+</br>
+</br>

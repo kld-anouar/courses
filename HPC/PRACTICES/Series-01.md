@@ -36,3 +36,9 @@ Set `local_max` for each process:
 Use **`MPI_Reduce`** with the **`MPI_MAX`** operation to find the true global maximum of all `local_max` values. The result must be stored in `global_max` on $P_0$.
 
 **Output:** $P_0$ must print: `"The Global Maximum is: 103"`
+
+</br>
+</br>
+</br>
+</br>
+</br>
