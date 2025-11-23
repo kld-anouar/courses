@@ -1211,104 +1211,106 @@ In LR(1), each item has **two parts**:
 Means: "We are parsing `C → cC`, and after reducing to C, the next token should be `$`."
 
 ---
-
-### Grammar Used
+### Grammar Used (with augmentation)
 
 ```
-1. S → C C
-2. C → c C
-3. C → d
+0. S' → S
+1. S  → C C
+2. C  → c C
+3. C  → d
 ```
 
+### Algorithm to Build LR(1) States (Canonical)
+1. **Start with the augmented grammar** Add new start rule `S' → S`. Initial item is `[S' → •S, $]`.
+2. **CLOSURE(I):** For each item `[A → α•Bβ, a]` where dot is before a non-terminal B:
+   * For each production `B → γ`
+   * Compute FIRST(βa)
+   * For each terminal `t` in FIRST(βa): add `[B → •γ, t]` to the set Repeat until no new items can be added.
+3. **GOTO(I, X):** Move • over symbol X in all items where possible, then apply CLOSURE.
+4. Repeat GOTO for every state and every grammar symbol until no new states appear.
 
 ### LR(1) States (Canonical)
 
-##### I₀ = Start State
-
+**I₀ = Start State**
 ```
+[S' → •S, $] 
 [S → •C C, $]
 [C → •c C, c|d]
 [C → •d, c|d]
 ```
 
-##### I₁ = GOTO(I₀, c)
+**I₁ = GOTO(I₀, S)**
+```
+[S' → S•, $]
+```
 
+**I₂ = GOTO(I₀, c)**
 ```
 [C → c•C, c|d]
 [C → •c C, c|d]
 [C → •d, c|d]
 ```
 
-##### I₂ = GOTO(I₀, d)
-
+**I₃ = GOTO(I₀, d)**
 ```
 [C → d•, c|d]
 ```
 
-##### I₃ = GOTO(I₀, C)
-
+**I₄ = GOTO(I₀, C)**
 ```
 [S → C•C, $]
 [C → •c C, $]
 [C → •d, $]
 ```
 
-##### I₄ = GOTO(I₃, c)
-
+**I₅ = GOTO(I₄, c)**
 ```
 [C → c•C, $]
 [C → •c C, $]
 [C → •d, $]
 ```
 
-##### I₅ = GOTO(I₃, d)
-
+**I₆ = GOTO(I₄, d)**
 ```
 [C → d•, $]
 ```
 
-##### I₆ = GOTO(I₁, C)
-
+**I₇ = GOTO(I₂, C)**
 ```
 [C → c C•, c|d]
 ```
 
-##### I₇ = GOTO(I₃, C)
-
+**I₈ = GOTO(I₄, C)**
 ```
 [S → C C•, $]
 ```
 
-##### I₈ = GOTO(I₄, C)
-
+**I₉ = GOTO(I₅, C)**
 ```
 [C → c C•, $]
 ```
 
 ### Key Observation
-
-* States **I2** and **I5** both contain `C → d•`, **but with different lookaheads**.
-* I2 reduces when next token ∈ {c, d}
-* I5 reduces only when next token = $
+* States I₃ and I₆ both contain `C → d•`, but with different lookaheads.
+* I₃ reduces when next token ∈ {c, d}
+* I₆ reduces only when next token = $
 
 This precision avoids shift/reduce conflicts.
 
-
 ### LR(1) Parsing Table
 
-| State | c  | d  | $   | C (GOTO) |
-| ----- | -- | -- | --- | -------- |
-| 0     | s1 | s2 | -   | 3        |
-| 1     | s1 | s2 | -   | 6        |
-| 2     | r3 | r3 | -   | -        |
-| 3     | s4 | s5 | -   | 7        |
-| 4     | s4 | s5 | -   | 8        |
-| 5     | -  | -  | r3  | -        |
-| 6     | r2 | r2 | -   | -        |
-| 7     | -  | -  | acc | -        |
-| 8     | -  | -  | r2  | -        |
-
----
+| State | c  | d  | $   | S (GOTO) | C (GOTO) |
+|-------|----|----|-----|----------|----------|
+| 0     | s2 | s3 | -   | 1        | 4        |
+| 1     | -  | -  | acc | -        | -        |
+| 2     | s2 | s3 | -   | -        | 7        |
+| 3     | r3 | r3 | -   | -        | -        |
+| 4     | s5 | s6 | -   | -        | 8        |
+| 5     | s5 | s6 | -   | -        | 9        |
+| 6     | -  | -  | r3  | -        | -        |
+| 7     | r2 | r2 | -   | -        | -        |
+| 8     | -  | -  | acc | -        | -        |
+| 9     | -  | -  | r2  | -        | -        |
 
 **Advantages of LR(1):**
 - More states, but **no conflicts**
