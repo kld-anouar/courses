@@ -1290,16 +1290,9 @@ Means: "We are parsing `C → cC`, and after reducing to C, the next token shoul
 [C → c C•, $]
 ```
 
-### Key Observation
-* States I₃ and I₆ both contain `C → d•`, but with different lookaheads.
-* I₃ reduces when next token ∈ {c, d}
-* I₆ reduces only when next token = $
-
-This precision avoids shift/reduce conflicts.
-
 ### LR(1) Parsing Table
 
-| State | c  | d  | $   | S (GOTO) | C (GOTO) |
+| State | c  | d  | $   | S | C |
 |-------|----|----|-----|----------|----------|
 | 0     | s2 | s3 | -   | 1        | 4        |
 | 1     | -  | -  | acc | -        | -        |
