@@ -1290,6 +1290,16 @@ Means: "We are parsing `C → cC`, and after reducing to C, the next token shoul
 [C → c C•, $]
 ```
 
+#### Build CLR(1) Table
+
+Now we fill the ACTION and GOTO tables using these rules:
+
+
+**For ACTION[i, a]:**
+- If state i has item X → α•aβ, t (dot before terminal a), add SHIFT j where j = GOTO(i, a)
+- If state i has item A → α•, t (dot at end), add REDUCE A→α only for the **lookahead** token t
+- If state i has item S' → S•, $ (start symbol complete), add ACCEPT for $
+
 ### LR(1) Parsing Table
 
 | State | c  | d  | $   | S | C |
