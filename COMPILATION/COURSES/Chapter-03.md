@@ -1058,7 +1058,7 @@ Let's work through a full example from start to finish.
 This grammar generates strings like: `c d`, `c c d`, `d d`, `c c c d d`, etc.
 
 
-## Step 1: FIRST and FOLLOW Sets
+#### FIRST and FOLLOW Sets
 
 ```
 FIRST(S) = {c, d}
@@ -1068,13 +1068,13 @@ FOLLOW(S) = {$}
 FOLLOW(C) = {c, d, $}
 ```
 
-## Step 2: Build LR(0) Items (States)
+#### Build LR(0) Items (States)
 An **item** is a production rule with a dot (•) showing how much we have seen so far.
 
 **Example:** `C → c•C` means "we have seen c, and we expect to see C next"
 
 
-### I₀ (Start State)
+##### I₀ (Start State)
 
 ```
 S' → •S
@@ -1083,7 +1083,7 @@ C → •c C
 C → •d
 ```
 
-### I₁ = GOTO(I₀, C)
+##### I₁ = GOTO(I₀, C)
 
 ```
 S  → C•C
@@ -1091,7 +1091,7 @@ C → •c C
 C → •d
 ```
 
-### I₂ = GOTO(I₀, c)
+##### I₂ = GOTO(I₀, c)
 
 ```
 C → c•C
@@ -1099,32 +1099,41 @@ C → •c C
 C → •d
 ```
 
-### I₃ = GOTO(I₀, d)
+##### I₃ = GOTO(I₀, d)
 
 ```
 C → d•
 ```
 
-### I₄ = GOTO(I₁, C)
+##### I₄ = GOTO(I₁, C)
 
 ```
 C → c C•
 ```
 
-### I₅ = GOTO(I₃, C)
+##### I₅ = GOTO(I₃, C)
 
 ```
 S  → C C•
 ```
 
-### I₆ = GOTO(I₀, S)
+##### I₆ = GOTO(I₀, S)
 
 ```
 S' → S•
 ```
 
 
-## Step 3: Build Complete SLR(1) Table
+#### Build Complete SLR(1) Table
+Now we fill the ACTION and GOTO tables using these rules:
+
+**For ACTION[i, a]:**
+- If state i has item `X → α•aβ`, add "SHIFT j" where j is the state after reading a
+- If state i has item `A → α•` (dot at end), add "REDUCE A→α" for all tokens in FOLLOW(A)
+- If state i has item `S → S'•` (start symbol complete), add "ACCEPT" for $
+
+**For GOTO[i, A]:**
+- If we can go from state i to state j by reading non-terminal A, put j in GOTO[i, A]
 
 | State | c  | d  | $   | S | C |
 | ----- | -- | -- | --- | - | - |
@@ -1143,16 +1152,8 @@ S' → S•
 * **acc** = ACCEPT
 * **-** = ERROR
 
-**Notes:**
 
-* GOTO(S) is now included (0 → 6), showing the parser goes to the accepting state when S is completed.
-* State 3 reduces `C → d` for all FOLLOW(C) terminals.
-* State 4 reduces `C → c C` for all FOLLOW(C) terminals.
-* State 5 reduces `S → C C` for all FOLLOW(S) terminals ($).
-* State 6 is the ACCEPT state, containing `S' → S•`.
-
-
-## Step 4: Parse the String `c d d $`
+#### Parse the String `c d d $`
 
 | Step | Stack     | Input   | Action  | Explanation                        |
 | ---- | --------- | ------- | ------- | ---------------------------------- |
@@ -1184,9 +1185,8 @@ Here, both A and B can be followed by 'd' (it's in both FOLLOW sets). So when we
 
 This is called a **reduce-reduce conflict**.
 
-**Solution:** Use more powerful parsers like LALR(1) or LR(1).
+**Solution:** Use more powerful parsers like **LALR(1)** or **LR(1)**.
 
----
 
 ## 2. LR(1) Parser (Canonical LR)
 
@@ -1203,113 +1203,110 @@ In LR(1), each item has **two parts**:
 ```
 
 **Meaning:**
-- `A → α•β` is the production with current position marked by •
-- `a` is the **lookahead token** (what we expect to see after reducing A)
 
-**Example:** `[C → c•C, $]`  
-This means: "We are parsing C → cC, and after we finish reducing to C, we expect to see $"
+* `A → α•β` is the production with the dot showing how much we have recognized.
+* `a` is the **lookahead token** (what we expect to follow A when we reduce).
+
+**Example:** `[C → c•C, $]`
+Means: "We are parsing `C → cC`, and after reducing to C, the next token should be `$`."
 
 ---
 
-### Complete Example
+### Grammar Used
 
-Let's use the same grammar but with LR(1) precision:
-
-**Grammar:**
 ```
 1. S → C C
 2. C → c C
 3. C → d
 ```
 
----
 
-**Building LR(1) States:**
+### LR(1) States (Canonical)
 
-**State I0 (Starting State):**
+##### I₀ = Start State
+
 ```
-[S → •C C, $]           (start symbol, expect $ at end)
-[C → •c C, c]           (first C might be followed by c)
-[C → •c C, d]           (first C might be followed by d)
-[C → •d, c]             (first C might be followed by c)
-[C → •d, d]             (first C might be followed by d)
+[S → •C C, $]
+[C → •c C, c|d]
+[C → •d, c|d]
 ```
 
-**State I1 (after reading 'c' from I0):**
+##### I₁ = GOTO(I₀, c)
+
 ```
-[C → c•C, c]
-[C → c•C, d]
-[C → •c C, c]
-[C → •c C, d]
-[C → •d, c]
-[C → •d, d]
+[C → c•C, c|d]
+[C → •c C, c|d]
+[C → •d, c|d]
 ```
 
-**State I2 (after reading 'd' from I0):**
+##### I₂ = GOTO(I₀, d)
+
 ```
-[C → d•, c]             (reduce C→d only when next token is c)
-[C → d•, d]             (reduce C→d only when next token is d)
+[C → d•, c|d]
 ```
 
-**State I3 (after reading C from I0):**
+##### I₃ = GOTO(I₀, C)
+
 ```
-[S → C•C, $]            (need second C, final lookahead is $)
-[C → •c C, $]           (second C expects $ after it)
+[S → C•C, $]
+[C → •c C, $]
 [C → •d, $]
 ```
 
-**State I4 (after reading 'c' from I3):**
+##### I₄ = GOTO(I₃, c)
+
 ```
 [C → c•C, $]
 [C → •c C, $]
 [C → •d, $]
 ```
 
-**State I5 (after reading 'd' from I3):**
-```
-[C → d•, $]             (reduce C→d only when next token is $)
-```
+##### I₅ = GOTO(I₃, d)
 
-**State I6 (after reading C from I1):**
 ```
-[C → c C•, c]           (reduce C→cC when next is c)
-[C → c C•, d]           (reduce C→cC when next is d)
+[C → d•, $]
 ```
 
-**State I7 (after reading C from I3):**
-```
-[S → C C•, $]           (accept when next is $)
-```
+##### I₆ = GOTO(I₁, C)
 
-**State I8 (after reading C from I4):**
 ```
-[C → c C•, $]           (reduce C→cC when next is $)
+[C → c C•, c|d]
 ```
 
----
+##### I₇ = GOTO(I₃, C)
 
-**Key Observation:**  
-Notice that state I2 and state I5 both have the item `C → d•`, but with **different lookaheads**:
-- State I2: reduce when next token is c or d
-- State I5: reduce when next token is $
+```
+[S → C C•, $]
+```
 
-This precision helps avoid conflicts!
+##### I₈ = GOTO(I₄, C)
 
----
+```
+[C → c C•, $]
+```
 
-**LR(1) Parsing Table:**
+### Key Observation
 
-| State | c | d | $ | C (GOTO) |
-|-------|---|---|---|----------|
-| 0 | s1 | s2 | - | 3 |
-| 1 | s1 | s2 | - | 6 |
-| 2 | r3 | r3 | - | - |
-| 3 | s4 | s5 | - | 7 |
-| 4 | s4 | s5 | - | 8 |
-| 5 | - | - | r3 | - |
-| 6 | r2 | r2 | - | - |
-| 7 | - | - | acc | - |
-| 8 | - | - | r2 | - |
+* States **I2** and **I5** both contain `C → d•`, **but with different lookaheads**.
+* I2 reduces when next token ∈ {c, d}
+* I5 reduces only when next token = $
+
+This precision avoids shift/reduce conflicts.
+
+
+### LR(1) Parsing Table
+
+| State | c  | d  | $   | C (GOTO) |
+| ----- | -- | -- | --- | -------- |
+| 0     | s1 | s2 | -   | 3        |
+| 1     | s1 | s2 | -   | 6        |
+| 2     | r3 | r3 | -   | -        |
+| 3     | s4 | s5 | -   | 7        |
+| 4     | s4 | s5 | -   | 8        |
+| 5     | -  | -  | r3  | -        |
+| 6     | r2 | r2 | -   | -        |
+| 7     | -  | -  | acc | -        |
+| 8     | -  | -  | r2  | -        |
 
 ---
 
