@@ -576,9 +576,8 @@ int main() {
 *   Cannot be used for clusters of computers.
 *   Can have performance issues if threads are constantly waiting for each other.
 
----
 
-### **4. The Expert's Toolkit: PThreads**
+<!-- ### **4. The Expert's Toolkit: PThreads**
 
 PThreads (POSIX Threads) is a low-level, manual approach to threading. It gives you maximum control but also maximum responsibility. Unlike OpenMP's simple pragmas, with PThreads, you manually create, manage, and synchronize every thread.
 
@@ -619,7 +618,7 @@ PThreads (POSIX Threads) is a low-level, manual approach to threading. It gives 
     *   **Yes:** You must use **MPI**.
 2.  Are you running on a **single multi-core computer**?
     *   Do you want to parallelize quickly and easily, especially loops? Use **OpenMP**.
-    *   Do you need complete control over complex thread interactions? Use **PThreads**.
+    *   Do you need complete control over complex thread interactions? Use **PThreads**. -->
 
 </br>
 </br>
