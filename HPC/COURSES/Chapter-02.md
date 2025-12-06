@@ -430,10 +430,10 @@ Use `sections` when you have separate blocks of work that can run at the same ti
 #pragma omp parallel sections
 {
   #pragma omp section
-  { render_video(); }        // one task (e.g., read/write data)
+  { render_video(); }   // Assined to single thread A
 
   #pragma omp section
-  { play_music(); }   // another independent task (e.g., calculations)
+  { play_music(); }     // Assined to single thread B
 }
 ```
 How it works:
@@ -442,7 +442,7 @@ How it works:
 - All sections run concurrently.
 - When all sections finish, threads synchronize before continuing.
 
-#### 3.3 `single` & `master`: one thread executes a block
+#### 3.4 `single` & `master`: one thread executes a block
 Sometimes, we want **only one thread** to execute a certain part of the code —  for example, printing, loading data once, or doing setup work.
 
 - **`single`** – The block is executed by **only one arbitrary thread**, while others skip it.  
